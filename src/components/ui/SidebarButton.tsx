@@ -26,7 +26,7 @@ export function SidebarButton({
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center ${isSidebarOpen ? 'justify-start' : 'justify-center'} gap-3.5 px-4 py-3 rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
+      className={`flex items-center ${isSidebarOpen ? 'w-full justify-start px-4 py-3 gap-3.5' : 'w-12 h-12 justify-center mx-auto'} rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
       style={{
         borderWidth: '1px'
       }}
@@ -51,7 +51,7 @@ export function SidebarButton({
 
       {/* İkon */}
       <Icon
-        size={16}
+        size={isSidebarOpen ? 16 : 20}
         className="flex-shrink-0 transition-all duration-300"
         style={{
           color: isActive 

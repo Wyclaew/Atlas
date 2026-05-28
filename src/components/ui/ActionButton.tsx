@@ -32,7 +32,7 @@ export function ActionButton({
     <motion.button
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[13px] font-bold transition-all duration-300 cursor-pointer outline-none ${getVariantStyles()} ${
+      className={`flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-[14px] font-bold transition-all duration-300 cursor-pointer outline-none ${getVariantStyles()} ${
         loading ? 'opacity-70 pointer-events-none' : ''
       } ${className}`}
       {...props}

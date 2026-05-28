@@ -49,7 +49,7 @@ export function Sidebar() {
         minWidth: isSidebarOpen ? 240 : 80
       }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="flex flex-col h-screen bg-bg-glass border-r border-border-subtle py-6 backdrop-blur-xl z-20 overflow-hidden"
+      className="flex flex-col h-full bg-bg-glass border-r border-border-subtle py-6 pb-10 backdrop-blur-xl z-20 overflow-hidden"
     >
       {/* Logo & Toggle - Üst Alan */}
       <div className={`flex items-center ${isSidebarOpen ? 'justify-between px-6' : 'justify-center'} pb-6 border-b border-border-subtle w-full mb-6 transition-all duration-300`}>
