@@ -45,14 +45,14 @@ export function Sidebar() {
     <motion.aside
       initial={false}
       animate={{ 
-        width: isSidebarOpen ? 240 : 80,
-        minWidth: isSidebarOpen ? 240 : 80
+        width: isSidebarOpen ? 240 : 64,
+        minWidth: isSidebarOpen ? 240 : 64
       }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="flex flex-col h-full bg-bg-glass border-r border-border-subtle py-6 pb-10 backdrop-blur-xl z-20 overflow-hidden"
     >
       {/* Logo & Toggle - Üst Alan */}
-      <div className={`flex items-center ${isSidebarOpen ? 'justify-between px-6' : 'justify-center'} pb-6 border-b border-border-subtle w-full mb-6 transition-all duration-300`}>
+      <div className={`flex items-center ${isSidebarOpen ? 'justify-between px-5' : 'justify-center px-0'} pb-6 border-b border-border-subtle w-full mb-6 transition-all duration-300`}>
         {/* Sadece açıkken göster */}
         {isSidebarOpen && (
           <div className="flex items-center gap-3">
@@ -82,7 +82,7 @@ export function Sidebar() {
       </div>
 
       {/* Ana Navigasyon Grupları */}
-      <div className={`flex-1 overflow-y-auto ${isSidebarOpen ? 'px-4' : 'px-2'} space-y-6 w-full flex flex-col no-scrollbar`}>
+      <div className="flex-1 overflow-y-auto px-3 space-y-6 w-full flex flex-col no-scrollbar overflow-x-hidden">
         {/* Kütüphane Grubu */}
         <div className="space-y-2">
           {isSidebarOpen && (
@@ -148,7 +148,7 @@ export function Sidebar() {
       </div>
 
       {/* Alt Bölüm — Senkronizasyon & Ayarlar */}
-      <div className={`${isSidebarOpen ? 'px-4' : 'px-2'} border-t border-border-subtle w-full pt-4 flex flex-col gap-4 mt-auto`}>
+      <div className="px-3 border-t border-border-subtle w-full pt-4 flex flex-col gap-4 mt-auto overflow-hidden">
         {/* Senkronizasyon Durumu */}
         {isSyncing && isSidebarOpen && (
           <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-hover border border-border-subtle animate-pulse">

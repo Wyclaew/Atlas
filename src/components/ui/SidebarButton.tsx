@@ -26,7 +26,7 @@ export function SidebarButton({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center ${isSidebarOpen ? 'w-full justify-start px-4 py-3 gap-3.5' : 'w-full h-12 justify-center'} rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
+      className={`flex items-center w-full justify-start px-3 py-3 gap-3.5 rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left overflow-hidden ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
       style={{
         borderWidth: '1px'
       }}
@@ -35,7 +35,7 @@ export function SidebarButton({
       {isActive && (
         <motion.div
           layoutId="sidebarActiveBar"
-          className={`absolute ${isSidebarOpen ? '-left-4' : '-left-2'} top-3 bottom-3 w-[2.5px] rounded-r-full bg-gradient-to-b from-orange-500 to-rose-600 shadow-[0_0_10px_rgba(249,115,22,0.5)]`}
+          className="absolute -left-3 top-3 bottom-3 w-[2.5px] rounded-r-full bg-gradient-to-b from-orange-500 to-rose-600 shadow-[0_0_10px_rgba(249,115,22,0.5)]"
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
         />
       )}
@@ -51,7 +51,7 @@ export function SidebarButton({
 
       {/* İkon */}
       <Icon
-        size={isSidebarOpen ? 16 : 20}
+        size={18}
         className="flex-shrink-0 transition-all duration-300"
         style={{
           color: isActive 
@@ -68,7 +68,7 @@ export function SidebarButton({
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: 'auto' }}
             exit={{ opacity: 0, width: 0 }}
-            className="text-[12.5px] font-bold transition-colors duration-300 truncate"
+            className="text-[12.5px] font-bold transition-colors duration-300 whitespace-nowrap overflow-hidden"
             style={{
               color: isActive ? 'var(--color-text-bright)' : 'var(--color-text-secondary)',
             }}
