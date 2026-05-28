@@ -19,7 +19,8 @@ export function SettingsPanel() {
   const [epicPath, setEpicPath] = useState('');
   const [autoSync, setAutoSync] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [syncError, setSyncError] = useState('');
+  const [steamSyncError, setSteamSyncError] = useState('');
+  const [epicSyncError, setEpicSyncError] = useState('');
 
   const { syncSteam, syncEpic } = useSync();
   const { isSyncing, syncMessage, addToast } = useGameStore();
@@ -78,7 +79,8 @@ export function SettingsPanel() {
 
   const saveSettings = async () => {
     setIsSaving(true);
-    setSyncError('');
+    setSteamSyncError('');
+    setEpicSyncError('');
     try {
       const db = await Database.load('sqlite:gamemanager.db');
       const settings = [
@@ -107,22 +109,23 @@ export function SettingsPanel() {
   };
 
   const handleSteamSync = async () => {
-    setSyncError('');
+    setSteamSyncError('');
     try {
-      await syncSteam(steamApiKey, steamId);
+      await syncSteam(steamApiKey, steamId, steamPath);
       addToast('Steam kütüphanesi başarıyla eşzamanlandı', 'success');
     } catch (err) {
-      setSyncError(String(err));
+      setSteamSyncError(err instanceof Error ? err.message : String(err));
       addToast('Steam eşzamanlama hatası', 'error');
     }
   };
 
   const handleEpicSync = async () => {
-    setSyncError('');
+    setEpicSyncError('');
     try {
-      await syncEpic();
+      await syncEpic(epicPath);
       addToast('Epic Games kütüphanesi başarıyla eşzamanlandı', 'success');
     } catch (err) {
+      setEpicSyncError(err instanceof Error ? err.message : String(err));
       addToast('Epic Games eşzamanlama hatası', 'error');
     }
   };
@@ -224,11 +227,11 @@ export function SettingsPanel() {
               {isSyncing ? syncMessage : 'STEAM KÜTÜPHANESİNİ EŞZAMANLA'}
             </ActionButton>
 
-            {syncError && (
+            {steamSyncError && (
               <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-rose-500/5 border border-rose-500/15">
                 <AlertCircle size={15} className="text-rose-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-rose-300 font-semibold leading-relaxed">
-                  {syncError}
+                  {steamSyncError}
                 </p>
               </div>
             )}
@@ -268,6 +271,15 @@ export function SettingsPanel() {
             >
               EPIC GAMES HESABINI BAĞLA
             </ActionButton>
+
+            {epicSyncError && (
+              <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-rose-500/5 border border-rose-500/15">
+                <AlertCircle size={15} className="text-rose-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-rose-300 font-semibold leading-relaxed">
+                  {epicSyncError}
+                </p>
+              </div>
+            )}
           </section>
         </div>
 

@@ -16,14 +16,28 @@ export function useSync() {
    * 2. Her oyunu SQLite'a UPSERT ile yazar
    * 3. Yerel kurulumları tarar ve is_installed alanını günceller
    */
-  const syncSteam = useCallback(async (apiKey: string, steamId: string) => {
+  const syncSteam = useCallback(async (apiKey: string, steamId: string, currentSteamPath?: string) => {
     if (!apiKey || !steamId) {
       throw new Error('Steam API Key ve SteamID64 gereklidir');
     }
 
-    setSyncing(true, 'Steam kütüphanesi senkronize ediliyor...');
-
     try {
+      let finalSteamPath = currentSteamPath;
+      const db = await Database.load('sqlite:gamemanager.db');
+
+      if (!finalSteamPath) {
+        const rows = await db.select<{ key: string; value: string }[]>(
+          `SELECT value FROM settings WHERE key = 'steam_path'`
+        );
+        finalSteamPath = rows[0]?.value;
+      }
+
+      if (!finalSteamPath) {
+        throw new Error('Steam kurulum yolu bulunamadı. Lütfen Steam yüklü olduğundan emin olun ve ayarlardan dizini belirtin.');
+      }
+
+      setSyncing(true, 'Steam kütüphanesi senkronize ediliyor...');
+
       // 1. Steam Web API'den oyun listesini çek (Rust komutu)
       const gamesJson = await invoke<string>('sync_steam_library', {
         apiKey,
@@ -31,7 +45,6 @@ export function useSync() {
       });
 
       const steamGames: SteamGameData[] = JSON.parse(gamesJson);
-      const db = await Database.load('sqlite:gamemanager.db');
 
       // Steam platform ID'sini al
       const platforms = await db.select<{ id: number }[]>(
@@ -78,7 +91,7 @@ export function useSync() {
       setSyncing(true, 'Yerel Steam kurulumları taranıyor...');
       try {
         const installedJson = await invoke<string>('sync_local_installations', {
-          steamPath: null,
+          steamPath: finalSteamPath,
         });
         const installedGames: InstalledGameInfo[] = JSON.parse(installedJson);
 
@@ -113,10 +126,24 @@ export function useSync() {
    * Epic Games kütüphanesini senkronize eder:
    * Yerel manifest dosyalarını okuyarak kurulu oyunları tespit eder
    */
-  const syncEpic = useCallback(async () => {
-    setSyncing(true, 'Epic Games kütüphanesi taranıyor...');
-
+  const syncEpic = useCallback(async (currentEpicPath?: string) => {
     try {
+      let finalEpicPath = currentEpicPath;
+      const db = await Database.load('sqlite:gamemanager.db');
+
+      if (!finalEpicPath) {
+        const rows = await db.select<{ key: string; value: string }[]>(
+          `SELECT value FROM settings WHERE key = 'epic_path'`
+        );
+        finalEpicPath = rows[0]?.value;
+      }
+
+      if (!finalEpicPath) {
+        throw new Error('Epic Games kurulum yolu bulunamadı. Sisteminizde Epic Games yüklü değil gibi görünüyor.');
+      }
+
+      setSyncing(true, 'Epic Games kütüphanesi taranıyor...');
+
       // Yerel manifest dosyalarını oku
       // Bu kısım şimdilik basitleştirilmiş — ileride OAuth ile genişletilecek
       // TODO: Epic OAuth device code flow implementasyonu
