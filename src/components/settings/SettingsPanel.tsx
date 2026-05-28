@@ -94,7 +94,7 @@ export function SettingsPanel() {
       for (const [key, value] of settings) {
         await db.execute(
           `INSERT INTO settings (key, value, updated_at) VALUES ($1, $2, datetime('now'))
-           ON CONFLICT(key) DO UPDATE SET value = $2, updated_at = datetime('now')`,
+           ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
           [key, value]
         );
       }

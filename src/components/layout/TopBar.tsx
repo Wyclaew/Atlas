@@ -58,7 +58,7 @@ export function TopBar() {
       </div>
 
       {/* Sağ Grup: Arama ve Segmented Filtreler */}
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         {/* Arama Kutusu - Focus olunca genişleyen pürüzsüz kapsül */}
         <div className="relative">
           <Search
@@ -76,7 +76,7 @@ export function TopBar() {
         </div>
 
         {/* Segmented Control - Sıralama Seçenekleri */}
-        <div className="flex items-center gap-1 bg-bg-tertiary p-1 rounded-xl border border-border-subtle shadow-inner">
+        <div className="flex items-center gap-1 bg-bg-tertiary p-1.5 rounded-2xl border border-border-subtle shadow-inner">
           {sortOptions.map((opt) => {
             const isSelected = sortField === opt.field;
             return (
@@ -104,7 +104,7 @@ export function TopBar() {
         </div>
 
         {/* Segmented Control - Kurulu Filtresi */}
-        <div className="flex items-center bg-bg-tertiary p-1 rounded-xl border border-border-subtle shadow-inner">
+        <div className="flex items-center bg-bg-tertiary p-1.5 rounded-2xl border border-border-subtle shadow-inner">
           <button
             onClick={() => setFilter('installedOnly', !filters.installedOnly)}
             className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 cursor-pointer flex items-center gap-1.5 outline-none ${
@@ -119,7 +119,7 @@ export function TopBar() {
         </div>
 
         {/* Görünüm Modu Değiştirici */}
-        <div className="flex items-center gap-1 bg-bg-tertiary p-1 rounded-xl border border-border-subtle shadow-inner">
+        <div className="flex items-center gap-1 bg-bg-tertiary p-1.5 rounded-2xl border border-border-subtle shadow-inner">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-lg transition-all duration-300 cursor-pointer outline-none ${
@@ -141,7 +141,7 @@ export function TopBar() {
         {/* Tema Değiştirici */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="p-2.5 rounded-xl border border-border-subtle bg-bg-tertiary text-text-secondary hover:text-orange-500 hover:border-orange-500/20 hover:bg-bg-hover transition-all duration-300 cursor-pointer flex items-center justify-center outline-none shadow-inner"
+          className="w-10 h-10 rounded-2xl border border-border-subtle bg-bg-tertiary text-text-secondary hover:text-orange-500 hover:border-orange-500/20 hover:bg-bg-hover transition-all duration-300 cursor-pointer flex items-center justify-center outline-none shadow-inner"
         >
           {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
         </button>

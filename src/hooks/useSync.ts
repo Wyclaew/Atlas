@@ -33,7 +33,18 @@ export function useSync() {
       }
 
       if (!finalSteamPath) {
-        throw new Error('Steam kurulum yolu bulunamadı. Lütfen Steam yüklü olduğundan emin olun ve ayarlardan dizini belirtin.');
+        try {
+          const detected = await invoke<{ steam_path: string | null }>('detect_platform_paths');
+          if (detected.steam_path) {
+            finalSteamPath = detected.steam_path;
+          }
+        } catch (e) {
+          console.warn('Otomatik Steam yolu tespiti başarısız:', e);
+        }
+      }
+
+      if (!finalSteamPath) {
+        throw new Error('Steam kurulum yolu otomatik bulunamadı. Lütfen ayarlardan dizini manuel olarak belirtin.');
       }
 
       setSyncing(true, 'Steam kütüphanesi senkronize ediliyor...');

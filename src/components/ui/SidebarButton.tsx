@@ -26,7 +26,7 @@ export function SidebarButton({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center ${isSidebarOpen ? 'w-full justify-start px-4 py-3 gap-3.5' : 'w-12 h-12 justify-center mx-auto'} rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
+      className={`flex items-center ${isSidebarOpen ? 'w-full justify-start px-4 py-3 gap-3.5' : 'w-full h-12 justify-center'} rounded-xl transition-all duration-300 group relative cursor-pointer outline-none select-none text-left ${isActive ? 'bg-bg-hover border-border-subtle' : 'bg-transparent border-transparent hover:bg-[rgba(128,128,128,0.05)]'}`}
       style={{
         borderWidth: '1px'
       }}
@@ -35,7 +35,7 @@ export function SidebarButton({
       {isActive && (
         <motion.div
           layoutId="sidebarActiveBar"
-          className="absolute left-0 top-3 bottom-3 w-[2.5px] rounded-r-full bg-gradient-to-b from-orange-500 to-rose-600 shadow-[0_0_10px_rgba(249,115,22,0.5)]"
+          className={`absolute ${isSidebarOpen ? '-left-4' : '-left-2'} top-3 bottom-3 w-[2.5px] rounded-r-full bg-gradient-to-b from-orange-500 to-rose-600 shadow-[0_0_10px_rgba(249,115,22,0.5)]`}
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
         />
       )}
