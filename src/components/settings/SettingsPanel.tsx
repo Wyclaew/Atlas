@@ -129,7 +129,7 @@ export function SettingsPanel() {
 
   return (
     <div className="flex-1 overflow-y-auto px-8 py-8 select-none">
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto flex flex-col gap-8">
         {/* Başlık Bölümü */}
         <div className="border-b border-border-subtle pb-6">
           <h2 className="text-2xl font-black font-display text-text-bright tracking-wide mb-1.5 uppercase">
@@ -143,7 +143,7 @@ export function SettingsPanel() {
         {/* 2 Sütunlu Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Steam Entegrasyon Kartı */}
-          <section className="rounded-2xl p-6 space-y-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
+          <section className="rounded-2xl p-6 flex flex-col gap-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-500/10 border border-sky-500/25">
                 <Monitor size={18} className="text-sky-400" />
@@ -158,7 +158,7 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               <InputField
                 label="Steam API Anahtarı"
                 type="password"
@@ -181,7 +181,7 @@ export function SettingsPanel() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               <InputField
                 label="SteamID64"
                 type="text"
@@ -235,7 +235,7 @@ export function SettingsPanel() {
           </section>
 
           {/* Epic Games Entegrasyon Kartı */}
-          <section className="rounded-2xl p-6 space-y-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
+          <section className="rounded-2xl p-6 flex flex-col gap-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-teal-500/10 border border-teal-500/25">
                 <Swords size={18} className="text-teal-400" />
@@ -272,7 +272,7 @@ export function SettingsPanel() {
         </div>
 
         {/* Genel Ayarlar Kartı - Alt / Tam Genişlik */}
-        <section className="rounded-2xl p-6 space-y-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
+        <section className="rounded-2xl p-6 flex flex-col gap-6 bg-bg-secondary/60 border border-border-subtle shadow-premium backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-text-bright tracking-wide uppercase">
