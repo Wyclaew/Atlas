@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   Save, RefreshCw, Monitor, Swords, Key,
-  User, FolderOpen, AlertCircle, Wifi
+  User, FolderOpen, AlertCircle, Wifi, Sun, Moon
 } from 'lucide-react';
 import Database from '@tauri-apps/plugin-sql';
 import { invoke } from '@tauri-apps/api/core';
@@ -23,7 +23,7 @@ export function SettingsPanel() {
   const [epicSyncError, setEpicSyncError] = useState('');
 
   const { syncSteam, syncEpic } = useSync();
-  const { isSyncing, syncMessage, addToast } = useGameStore();
+  const { isSyncing, syncMessage, addToast, theme, setTheme } = useGameStore();
 
   useEffect(() => {
     loadSettings();
@@ -93,7 +93,7 @@ export function SettingsPanel() {
 
       for (const [key, value] of settings) {
         await db.execute(
-          `INSERT INTO settings (key, value, updated_at) VALUES ($1, $2, datetime('now'))
+          `INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))
            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
           [key, value]
         );
@@ -102,7 +102,7 @@ export function SettingsPanel() {
       addToast('Ayarlar başarıyla kaydedildi', 'success');
     } catch (err) {
       console.error('Ayarlar kaydedilirken hata:', err);
-      addToast('Ayarlar kaydedilemedi', 'error');
+      addToast(`Kaydedilemedi: ${err instanceof Error ? err.message : String(err)}`, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -307,6 +307,37 @@ export function SettingsPanel() {
                   autoSync ? 'left-6' : 'left-1'
                 }`}
               />
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-between border-t border-border-subtle pt-6 mt-2">
+            <div>
+              <p className="text-xs font-bold text-text-bright tracking-wide uppercase">
+                Görünüm Teması
+              </p>
+              <p className="text-[11px] text-text-secondary font-semibold mt-1">
+                Karanlık mod ve aydınlık mod arasında geçiş yapın
+              </p>
+            </div>
+            <button
+              className={`relative w-11 h-6 rounded-full transition-all duration-300 cursor-pointer outline-none ${
+                theme === 'light'
+                  ? 'bg-gradient-to-r from-orange-500 to-rose-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]'
+                  : 'bg-bg-elevated border border-border-subtle'
+              }`}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              <div
+                className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 flex items-center justify-center ${
+                  theme === 'light' ? 'left-6' : 'left-1'
+                }`}
+              >
+                {theme === 'light' ? (
+                  <Sun size={10} className="text-orange-500" />
+                ) : (
+                  <Moon size={10} className="text-slate-500" />
+                )}
+              </div>
             </button>
           </div>
         </section>

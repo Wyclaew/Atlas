@@ -1,6 +1,6 @@
 // components/layout/TopBar.tsx — Üst Araç Çubuğu
 
-import { Search, Grid3X3, List, SortAsc, SortDesc, Filter, RefreshCw, Sun, Moon } from 'lucide-react';
+import { Search, Grid3X3, List, SortAsc, SortDesc, Filter, RefreshCw } from 'lucide-react';
 import { useGameStore } from '../../stores/useGameStore';
 import type { SortField } from '../../types';
 
@@ -30,7 +30,6 @@ export function TopBar() {
     viewMode, setViewMode,
     activeNav, filteredGames,
     isSyncing,
-    theme, setTheme,
   } = useGameStore();
 
   return (
@@ -137,14 +136,6 @@ export function TopBar() {
             <List size={13} />
           </button>
         </div>
-
-        {/* Tema Değiştirici */}
-        <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="w-10 h-10 rounded-2xl border border-border-subtle bg-bg-tertiary text-text-secondary hover:text-orange-500 hover:border-orange-500/20 hover:bg-bg-hover transition-all duration-300 cursor-pointer flex items-center justify-center outline-none shadow-inner"
-        >
-          {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
-        </button>
       </div>
     </header>
   );
