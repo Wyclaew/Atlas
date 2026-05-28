@@ -13,7 +13,7 @@ Bu dosya, projede çalışacak olan yapay zeka geliştirme ajanlarının (AI Age
 * **Hedef İşlev:** Steam & Epic Games Store kütüphanelerini birleştiren, playtime takibi ve oyun başlatma yeteneklerine sahip yerel oyun kütüphanesi yöneticisi.
 * **Hedef Platform:** Windows (Öncelikli) & macOS (İkincil).
 * **Aktif Durum:** 
-  * **Tasarım Yenilemesi (Concept A):** Matte Charcoal & Burnt Orange renk paleti uygulandı. 64px dikey çapa stili Sidebar (minimap) ile hover tooltipleri ve dikey istatistikler entegre edildi. Hover'da radial tel kafes animasyonu ve kiremit turuncu parıltı efektleri sunan premium oyun kartları hazırlandı.
+  * **Tasarım Yenilemesi (Cyber-Minimalist Obsidian):** Saf obsidian koyu teması (`#090a0f`) ile Coral-Ember gradyanlı (`from-orange-500 to-rose-600`) mikro etkileşimler ve aktif durum vurguları uygulandı. `framer-motion` kütüphanesi kullanılarak sayfa geçişleri, detay paneli, toast bildirimleri ve oyun kartı hover durumları akıcı mikro animasyonlarla zenginleştirildi. 
   * **Hata Yönetimi ve Veritabanı:** Rust tarafında `thiserror` ve `anyhow` tabanlı merkezi hata yönetimi (`AppError`) kuruldu. SQLite üzerinde arama, platform ve favori filtrelemeleri için kompozit indeks optimizasyonları tamamlandı.
   * **Frontend:** React + TypeScript + Zustand tabanlı sanallaştırılmış modern frontend, global dynamic Toast bildirim portalı ve tema sistemiyle zenginleştirildi.
   * Proje en son tasarım ve mimari revizyonla birlikte GitHub reposuna commitlendi.
@@ -31,7 +31,9 @@ Bu dosya, projede çalışacak olan yapay zeka geliştirme ajanlarının (AI Age
 
 ### 2. Frontend & Arayüz
 * **React + TypeScript:** Statik tip güvenliği.
-* **Tailwind CSS v4:** Vite entegrasyonu ile yerleşik CSS değişkenleri ve ultra hızlı derleme süreleri sunan en son sürüm. Renkler ve glassmorphism özellikleri tamamen vanilla CSS değişkenleriyle yönetilmektedir.
+* **Tailwind CSS v4 & Stiller:** Vite entegrasyonu ile yerleşik CSS değişkenleri ve ultra hızlı derleme süreleri sunan en son sürüm. Renkler ve glassmorphism özellikleri tamamen vanilla CSS değişkenleriyle yönetilmektedir.
+* **Framer Motion:** Arayüzün native hissettirmesi için sayfa geçişleri, modal/panel açılışları ve buton mikro-etkileşimleri 0.15s - 0.3s arası animasyonlarla canlandırılmıştır.
+* **Ortak UI Bileşenleri:** Kod tekrarını engellemek amacıyla `src/components/ui/` altında tip-güvenli `SidebarButton.tsx`, `InputField.tsx` ve `ActionButton.tsx` bileşenleri çıkarılmıştır.
 * **Zustand (`src/stores/useGameStore.ts`):** Uygulamanın global state'ini yönetir. SQLite ile senkronize çalışır. Global Toast bildirim listesi ve aktif tema bu store üzerinden yönetilir.
 * **Sanallaştırma (`@tanstack/react-virtual`):** Büyük oyun listelerinin DOM'u şişirmeden performanslı bir şekilde çizilmesi için kullanılmıştır.
 
