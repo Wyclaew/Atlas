@@ -90,13 +90,13 @@ export function SettingsPanel() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 max-w-3xl">
+    <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 max-w-3xl animate-fade-in">
       {/* Başlık */}
       <div>
-        <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-bright)' }}>
+        <h2 className="text-2xl font-bold font-display text-text-bright mb-1">
           Ayarlar
         </h2>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="text-sm text-text-secondary">
           Platform bağlantıları ve uygulama yapılandırması
         </p>
       </div>
@@ -105,33 +105,28 @@ export function SettingsPanel() {
           Steam Yapılandırması
           ========================================== */}
       <section
-        className="rounded-2xl p-6 space-y-5"
-        style={{
-          background: 'var(--color-bg-secondary)',
-          border: '1px solid var(--color-border-subtle)',
-        }}
+        className="rounded-2xl p-6 space-y-5 bg-bg-secondary border border-border-subtle"
       >
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(102, 192, 244, 0.1)' }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-500/10"
           >
-            <Monitor size={20} style={{ color: '#66c0f4' }} />
+            <Monitor size={18} className="text-sky-400" />
           </div>
           <div>
-            <h3 className="text-base font-semibold" style={{ color: 'var(--color-text-bright)' }}>
+            <h3 className="text-base font-bold font-display text-text-bright">
               Steam Entegrasyonu
             </h3>
-            <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            <p className="text-xs text-text-secondary">
               Steam Web API ile kütüphanenizi senkronize edin
             </p>
           </div>
         </div>
 
         {/* Steam API Key */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
-            <Key size={14} style={{ color: 'var(--color-accent-indigo)' }} />
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-text-muted uppercase tracking-wider">
+            <Key size={13} className="text-accent-indigo" />
             Steam API Anahtarı
           </label>
           <input
@@ -139,19 +134,19 @@ export function SettingsPanel() {
             value={steamApiKey}
             onChange={(e) => setSteamApiKey(e.target.value)}
             placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-            className="input-dark w-full font-mono text-xs"
+            className="input-premium w-full font-mono text-xs"
           />
-          <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-xs text-text-muted mt-1.5">
             API anahtarınızı{' '}
-            <span style={{ color: 'var(--color-accent-indigo)' }}>steamcommunity.com/dev/apikey</span>
-            {' '}adresinden alabilirsiniz
+            <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener noreferrer" className="text-accent-indigo hover:underline font-medium">steamcommunity.com/dev/apikey</a>
+            {' '}adresinden alabilirsiniz.
           </p>
         </div>
 
         {/* SteamID64 */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
-            <User size={14} style={{ color: 'var(--color-accent-indigo)' }} />
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-text-muted uppercase tracking-wider">
+            <User size={13} className="text-accent-indigo" />
             SteamID64
           </label>
           <input
@@ -159,46 +154,46 @@ export function SettingsPanel() {
             value={steamId}
             onChange={(e) => setSteamId(e.target.value)}
             placeholder="76561198XXXXXXXXX"
-            className="input-dark w-full font-mono text-xs"
+            className="input-premium w-full font-mono text-xs"
           />
-          <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-xs text-text-muted mt-1.5">
             SteamID'nizi{' '}
-            <span style={{ color: 'var(--color-accent-indigo)' }}>steamid.io</span>
-            {' '}üzerinden bulabilirsiniz
+            <a href="https://steamid.io" target="_blank" rel="noopener noreferrer" className="text-accent-indigo hover:underline font-medium">steamid.io</a>
+            {' '}üzerinden bulabilirsiniz.
           </p>
         </div>
 
         {/* Steam Kurulum Yolu */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
-            <FolderOpen size={14} style={{ color: 'var(--color-accent-indigo)' }} />
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-text-muted uppercase tracking-wider">
+            <FolderOpen size={13} className="text-accent-indigo" />
             Steam Kurulum Yolu
           </label>
           <input
             type="text"
             value={steamPath}
             onChange={(e) => setSteamPath(e.target.value)}
-            className="input-dark w-full font-mono text-xs"
+            className="input-premium w-full font-mono text-xs"
           />
         </div>
 
         {/* Steam Senkronizasyon Butonu */}
         <button
-          className="btn-primary flex items-center gap-2 w-full justify-center py-2.5"
+          className="btn-primary flex items-center gap-2.5 w-full justify-center py-3 cursor-pointer"
           onClick={handleSteamSync}
           disabled={isSyncing || !steamApiKey || !steamId}
           style={{
             opacity: isSyncing || !steamApiKey || !steamId ? 0.5 : 1,
           }}
         >
-          <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
+          <RefreshCw size={15} className={isSyncing ? 'animate-spin' : ''} />
           {isSyncing ? syncMessage : 'Steam Kütüphanesini Senkronize Et'}
         </button>
 
         {syncError && (
-          <div className="flex items-start gap-2 px-4 py-3 rounded-xl" style={{ background: 'rgba(244, 63, 94, 0.1)', border: '1px solid rgba(244, 63, 94, 0.2)' }}>
-            <AlertCircle size={16} style={{ color: 'var(--color-accent-rose)', flexShrink: 0, marginTop: '1px' }} />
-            <p className="text-xs" style={{ color: 'var(--color-accent-rose)' }}>
+          <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/25">
+            <AlertCircle size={15} className="text-accent-rose flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-accent-rose font-medium">
               {syncError}
             </p>
           </div>
@@ -209,53 +204,43 @@ export function SettingsPanel() {
           Epic Games Yapılandırması
           ========================================== */}
       <section
-        className="rounded-2xl p-6 space-y-5"
-        style={{
-          background: 'var(--color-bg-secondary)',
-          border: '1px solid var(--color-border-subtle)',
-        }}
+        className="rounded-2xl p-6 space-y-5 bg-bg-secondary border border-border-subtle"
       >
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(255, 255, 255, 0.05)' }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent-purple/10"
           >
-            <Swords size={20} style={{ color: '#ffffff' }} />
+            <Swords size={18} className="text-accent-purple" />
           </div>
           <div>
-            <h3 className="text-base font-semibold" style={{ color: 'var(--color-text-bright)' }}>
+            <h3 className="text-base font-bold font-display text-text-bright">
               Epic Games Entegrasyonu
             </h3>
-            <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            <p className="text-xs text-text-secondary">
               OAuth akışı ile Epic Games kütüphanenizi bağlayın
             </p>
           </div>
         </div>
 
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
-            <FolderOpen size={14} style={{ color: 'var(--color-accent-purple)' }} />
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-text-muted uppercase tracking-wider">
+            <FolderOpen size={13} className="text-accent-purple" />
             Epic Games Kurulum Yolu
           </label>
           <input
             type="text"
             value={epicPath}
             onChange={(e) => setEpicPath(e.target.value)}
-            className="input-dark w-full font-mono text-xs"
+            className="input-premium w-full font-mono text-xs"
           />
         </div>
 
         <button
-          className="flex items-center gap-2 w-full justify-center py-2.5 rounded-xl font-semibold text-sm transition-all duration-200"
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid var(--color-border-medium)',
-            color: 'var(--color-text-primary)',
-          }}
+          className="flex items-center gap-2.5 w-full justify-center py-3 rounded-xl font-bold font-display text-xs tracking-wider border border-border-medium text-text-primary hover:bg-bg-hover hover:border-border-strong transition-all duration-200 cursor-pointer"
           onClick={() => syncEpic()}
           disabled={isSyncing}
         >
-          <Wifi size={16} />
+          <Wifi size={15} />
           Epic Games Hesabını Bağla
         </button>
       </section>
@@ -264,36 +249,32 @@ export function SettingsPanel() {
           Genel Ayarlar
           ========================================== */}
       <section
-        className="rounded-2xl p-6 space-y-5"
-        style={{
-          background: 'var(--color-bg-secondary)',
-          border: '1px solid var(--color-border-subtle)',
-        }}
+        className="rounded-2xl p-6 space-y-5 bg-bg-secondary border border-border-subtle"
       >
-        <h3 className="text-base font-semibold" style={{ color: 'var(--color-text-bright)' }}>
+        <h3 className="text-base font-bold font-display text-text-bright">
           Genel Ayarlar
         </h3>
 
         {/* Otomatik senkronizasyon toggle */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+            <p className="text-sm font-semibold text-text-primary">
               Başlangıçta Otomatik Senkronizasyon
             </p>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="text-xs text-text-muted">
               Uygulama açıldığında kütüphaneleri otomatik güncelle
             </p>
           </div>
           <button
-            className="relative w-11 h-6 rounded-full transition-all duration-200"
-            style={{
-              background: autoSync ? 'var(--color-accent-indigo)' : 'var(--color-bg-hover)',
-            }}
+            className={`relative w-11 h-6 rounded-full transition-all duration-300 cursor-pointer ${
+              autoSync ? 'bg-accent-indigo' : 'bg-bg-hover'
+            }`}
             onClick={() => setAutoSync(!autoSync)}
           >
             <div
-              className="absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200"
-              style={{ left: autoSync ? '24px' : '4px' }}
+              className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${
+                autoSync ? 'left-6' : 'left-1'
+              }`}
             />
           </button>
         </div>
@@ -302,16 +283,16 @@ export function SettingsPanel() {
       {/* Kaydet butonu */}
       <div className="flex items-center gap-3">
         <button
-          className="btn-primary flex items-center gap-2 px-6 py-2.5"
+          className="btn-primary flex items-center gap-2 px-6 py-3 cursor-pointer"
           onClick={saveSettings}
           disabled={isSaving}
         >
-          <Save size={16} />
+          <Save size={15} />
           {isSaving ? 'Kaydediliyor...' : 'Ayarları Kaydet'}
         </button>
 
         {saveMessage && (
-          <span className="flex items-center gap-1 text-sm" style={{ color: 'var(--color-accent-emerald)' }}>
+          <span className="flex items-center gap-1 text-sm font-semibold text-accent-emerald">
             <CheckCircle2 size={16} />
             {saveMessage}
           </span>

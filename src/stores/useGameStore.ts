@@ -24,6 +24,7 @@ interface GameStore {
   activeNav: NavSection;            // Aktif sidebar sekmesi
   isDetailOpen: boolean;            // Detay paneli açık mı?
   stats: LibraryStats;              // Kütüphane istatistikleri
+  theme: 'dark' | 'light';          // Tema (dark/light)
 
   // === Aksiyonlar (Actions) ===
   loadGames: () => Promise<void>;
@@ -38,6 +39,7 @@ interface GameStore {
   setSyncing: (syncing: boolean, message?: string) => void;
   calculateStats: () => void;
   applyFiltersAndSort: () => void;
+  setTheme: (theme: 'dark' | 'light') => void;
 }
 
 // =============================================
@@ -91,6 +93,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     customGames: 0,
     statusCounts: { Backlog: 0, Playing: 0, Completed: 0, Wishlist: 0, Dropped: 0 },
   },
+  theme: (localStorage.getItem('theme') as 'dark' | 'light') || 'dark',
 
   // =============================================
   // Veritabanı İşlemleri
@@ -324,5 +327,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
 
     set({ filteredGames: result });
+  },
+
+  setTheme: (theme) => {
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    set({ theme });
   },
 }));

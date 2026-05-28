@@ -1,7 +1,7 @@
 // components/layout/TopBar.tsx — Üst Araç Çubuğu
 // Arama, sıralama, görünüm modu değiştirici ve filtreler
 
-import { Search, Grid3X3, List, SortAsc, SortDesc, Filter, RefreshCw } from 'lucide-react';
+import { Search, Grid3X3, List, SortAsc, SortDesc, Filter, RefreshCw, Sun, Moon } from 'lucide-react';
 import { useGameStore } from '../../stores/useGameStore';
 import type { SortField } from '../../types';
 
@@ -33,34 +33,29 @@ export function TopBar() {
     viewMode, setViewMode,
     activeNav, filteredGames,
     isSyncing,
+    theme, setTheme,
   } = useGameStore();
 
   return (
     <header
-      className="flex items-center gap-4 px-6 py-3 border-b"
+      className="flex items-center gap-4 px-6 py-3 border-b bg-bg-secondary border-border-subtle"
       style={{
-        background: 'var(--color-bg-secondary)',
-        borderColor: 'var(--color-border-subtle)',
         minHeight: '64px',
       }}
     >
       {/* Sol: Sayfa başlığı ve oyun sayısı */}
       <div className="flex items-center gap-3 min-w-0">
-        <h2 className="text-lg font-bold whitespace-nowrap" style={{ color: 'var(--color-text-bright)' }}>
+        <h2 className="text-lg font-bold font-display text-text-bright whitespace-nowrap">
           {navTitles[activeNav] ?? 'Tüm Oyunlar'}
         </h2>
         <span
-          className="text-xs font-medium px-2 py-0.5 rounded-full"
-          style={{
-            background: 'var(--color-accent-indigo-glow)',
-            color: 'var(--color-accent-indigo-hover)',
-          }}
+          className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-accent-indigo-glow text-accent-indigo"
         >
           {filteredGames.length} oyun
         </span>
 
         {isSyncing && (
-          <RefreshCw size={16} className="animate-spin ml-1" style={{ color: 'var(--color-accent-indigo)' }} />
+          <RefreshCw size={16} className="animate-spin ml-1 text-accent-indigo" />
         )}
       </div>
 
@@ -69,94 +64,101 @@ export function TopBar() {
         <div className="relative">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted"
           />
           <input
             type="text"
             placeholder="Oyun ara..."
             value={filters.search}
             onChange={(e) => setFilter('search', e.target.value)}
-            className="input-dark w-full pl-9 pr-3 py-2 text-sm"
+            className="input-premium w-full pl-10 pr-4 py-2 text-sm"
           />
         </div>
       </div>
 
-      {/* Sağ: Sıralama + Görünüm Modu */}
+      {/* Sağ: Sıralama + Görünüm Modu + Tema */}
       <div className="flex items-center gap-2">
         {/* Sıralama Dropdown */}
         <div className="flex items-center gap-1">
-          {sortOptions.map((opt) => (
-            <button
-              key={opt.field}
-              onClick={() => setSorting(opt.field)}
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200"
-              style={{
-                background: sortField === opt.field ? 'var(--color-bg-elevated)' : 'transparent',
-                color: sortField === opt.field ? 'var(--color-accent-indigo-hover)' : 'var(--color-text-secondary)',
-                border: sortField === opt.field ? '1px solid var(--color-border-medium)' : '1px solid transparent',
-              }}
-              title={`${opt.label}e göre sırala`}
-            >
-              {opt.label}
-              {sortField === opt.field && (
-                sortDirection === 'asc'
-                  ? <SortAsc size={12} className="inline ml-1" />
-                  : <SortDesc size={12} className="inline ml-1" />
-              )}
-            </button>
-          ))}
+          {sortOptions.map((opt) => {
+            const isSelected = sortField === opt.field;
+            return (
+              <button
+                key={opt.field}
+                onClick={() => setSorting(opt.field)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  isSelected 
+                    ? 'bg-bg-elevated text-accent-indigo border border-border-strong' 
+                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
+                }`}
+                title={`${opt.label}e göre sırala`}
+              >
+                {opt.label}
+                {isSelected && (
+                  sortDirection === 'asc'
+                    ? <SortAsc size={12} className="inline ml-1" />
+                    : <SortDesc size={12} className="inline ml-1" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Ayırıcı */}
-        <div className="w-px h-6 mx-1" style={{ background: 'var(--color-border-subtle)' }} />
+        <div className="w-px h-6 mx-1 bg-border-subtle" />
 
         {/* Kurulu filtresi */}
         <button
           onClick={() => setFilter('installedOnly', !filters.installedOnly)}
-          className="px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200"
-          style={{
-            background: filters.installedOnly ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
-            color: filters.installedOnly ? 'var(--color-accent-emerald)' : 'var(--color-text-secondary)',
-            border: filters.installedOnly ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid transparent',
-          }}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            filters.installedOnly 
+              ? 'bg-accent-emerald-glow text-accent-emerald border border-accent-emerald/30' 
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
+          }`}
           title="Yalnızca kurulu oyunları göster"
         >
-          <Filter size={14} className="inline mr-1" />
+          <Filter size={13} className="inline mr-1" />
           Kurulu
         </button>
 
         {/* Ayırıcı */}
-        <div className="w-px h-6 mx-1" style={{ background: 'var(--color-border-subtle)' }} />
+        <div className="w-px h-6 mx-1 bg-border-subtle" />
 
         {/* Grid / Liste görünüm değiştirici */}
         <div
-          className="flex rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--color-border-subtle)' }}
+          className="flex rounded-lg overflow-hidden border border-border-subtle p-0.5 bg-bg-primary"
         >
           <button
             onClick={() => setViewMode('grid')}
-            className="p-1.5 transition-all duration-200"
-            style={{
-              background: viewMode === 'grid' ? 'var(--color-bg-elevated)' : 'transparent',
-              color: viewMode === 'grid' ? 'var(--color-accent-indigo)' : 'var(--color-text-muted)',
-            }}
+            className={`p-1.5 rounded-md transition-all duration-200 cursor-pointer ${
+              viewMode === 'grid' ? 'bg-bg-elevated text-accent-indigo' : 'text-text-muted hover:text-text-secondary'
+            }`}
             title="Grid görünümü"
           >
-            <Grid3X3 size={16} />
+            <Grid3X3 size={15} />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className="p-1.5 transition-all duration-200"
-            style={{
-              background: viewMode === 'list' ? 'var(--color-bg-elevated)' : 'transparent',
-              color: viewMode === 'list' ? 'var(--color-accent-indigo)' : 'var(--color-text-muted)',
-            }}
+            className={`p-1.5 rounded-md transition-all duration-200 cursor-pointer ${
+              viewMode === 'list' ? 'bg-bg-elevated text-accent-indigo' : 'text-text-muted hover:text-text-secondary'
+            }`}
             title="Liste görünümü"
           >
-            <List size={16} />
+            <List size={15} />
           </button>
         </div>
+
+        {/* Ayırıcı */}
+        <div className="w-px h-6 mx-1 bg-border-subtle" />
+
+        {/* Tema Değiştirici */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="p-1.5 rounded-lg border border-border-subtle bg-bg-secondary text-text-secondary hover:text-accent-indigo hover:bg-bg-hover hover:border-border-strong transition-all duration-300 cursor-pointer flex items-center justify-center"
+          title={theme === 'dark' ? 'Açık Temaya Geç' : 'Koyu Temaya Geç'}
+        >
+          {theme === 'dark' ? <Sun size={16} className="animate-pulse" /> : <Moon size={16} />}
+        </button>
       </div>
     </header>
   );

@@ -8,8 +8,13 @@ import { useGameLauncher } from './hooks/useGameLauncher';
 import type { Game } from './types';
 
 function App() {
-  const { loadGames } = useGameStore();
+  const { loadGames, theme } = useGameStore();
   const { launchGame } = useGameLauncher();
+
+  // Temayı html data-theme özniteliğine uygula
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // Uygulama başlangıcında oyunları yükle
   useEffect(() => {

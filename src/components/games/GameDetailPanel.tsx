@@ -65,23 +65,16 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
     <>
       {/* Backdrop — tıklayınca kapat */}
       <div
-        className="fixed inset-0 z-40 transition-opacity duration-300"
-        style={{
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(4px)',
-        }}
+        className="fixed inset-0 z-40 transition-opacity duration-300 bg-black/40 backdrop-blur-[4px]"
         onClick={() => toggleDetail(false)}
       />
 
       {/* Panel */}
       <div
-        className="fixed top-0 right-0 h-full z-50 flex flex-col animate-slide-right"
+        className="fixed top-0 right-0 h-full z-50 flex flex-col animate-slide-right glass-strong border-l border-border-subtle shadow-premium"
         style={{
-          width: '480px',
+          width: '460px',
           maxWidth: '100vw',
-          background: 'var(--color-bg-primary)',
-          borderLeft: '1px solid var(--color-border-subtle)',
-          boxShadow: '-8px 0 40px rgba(0, 0, 0, 0.5)',
         }}
       >
         {/* Banner görseli */}
@@ -89,48 +82,45 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
           <img
             src={game.banner_image_url ?? game.cover_image_url ?? ''}
             alt={game.title}
-            className="w-full h-full object-cover"
-            style={{ filter: 'brightness(0.7)' }}
+            className="w-full h-full object-cover select-none"
+            style={{ filter: 'brightness(0.65)' }}
           />
           {/* Gradient overlay */}
           <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(to top, var(--color-bg-primary) 0%, transparent 60%)',
-            }}
+            className="absolute inset-0 bg-gradient-to-t from-bg-primary to-transparent"
           />
 
           {/* Kapat butonu */}
           <button
-            className="absolute top-4 right-4 p-2 rounded-full glass transition-all duration-200 hover:scale-110"
+            className="absolute top-4 right-4 p-2 rounded-xl glass border border-border-subtle text-text-primary hover:text-accent-indigo hover:scale-105 hover:border-border-strong transition-all duration-200 cursor-pointer"
             onClick={() => toggleDetail(false)}
           >
-            <X size={18} style={{ color: 'var(--color-text-primary)' }} />
+            <X size={16} />
           </button>
 
           {/* Favori butonu */}
           <button
-            className="absolute top-4 left-4 p-2 rounded-full glass transition-all duration-200 hover:scale-110"
+            className={`absolute top-4 left-4 p-2 rounded-xl glass border transition-all duration-200 hover:scale-105 cursor-pointer ${
+              isFavorite ? 'bg-rose-500/20 border-rose-500/40 text-rose-500' : 'border-border-subtle text-white'
+            }`}
             onClick={() => toggleFavorite(game.id)}
           >
             <Heart
-              size={18}
-              fill={isFavorite ? '#f43f5e' : 'none'}
-              color={isFavorite ? '#f43f5e' : 'white'}
+              size={16}
+              fill={isFavorite ? 'currentColor' : 'none'}
             />
           </button>
 
           {/* Başlık overlay */}
           <div className="absolute bottom-4 left-5 right-5">
-            <div className="flex items-center gap-2 mb-2">
-              <PlatformIcon size={14} style={{ color: 'var(--color-text-secondary)' }} />
-              <span className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="flex items-center gap-2 mb-1.5">
+              <PlatformIcon size={12} className="text-text-secondary" />
+              <span className="text-[10px] font-bold tracking-wider uppercase text-text-secondary">
                 {game.platform_name}
               </span>
             </div>
             <h2
-              className="text-2xl font-bold leading-tight"
-              style={{ color: 'var(--color-text-bright)' }}
+              className="text-xl font-bold font-display text-text-bright leading-tight"
             >
               {game.title}
             </h2>
@@ -138,83 +128,73 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
         </div>
 
         {/* İçerik — scrollable */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 
           {/* OYNA / KAPAT butonu */}
           <button
-            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300"
-            style={{
-              background: isInstalled
-                ? 'linear-gradient(135deg, var(--color-accent-indigo), #4f46e5)'
-                : 'linear-gradient(135deg, var(--color-accent-emerald), #059669)',
-              color: 'white',
-              boxShadow: isInstalled
-                ? '0 4px 20px var(--color-accent-indigo-glow)'
-                : '0 4px 20px var(--color-accent-emerald-glow)',
-            }}
+            className={`w-full py-3.5 rounded-xl font-bold font-display text-xs tracking-widest flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer text-white shadow-premium ${
+              isInstalled
+                ? 'bg-gradient-to-r from-accent-indigo to-accent-purple hover:shadow-[0_8px_25px_var(--accent-indigo-glow)]'
+                : 'bg-gradient-to-r from-accent-emerald to-accent-emerald-glow hover:shadow-[0_8px_25px_var(--accent-emerald-glow)]'
+            }`}
             onClick={() => {
               if (isInstalled) onLaunch(game);
             }}
           >
             {isInstalled ? (
               <>
-                <Play size={20} fill="white" />
-                OYNA
+                <Play size={15} fill="white" />
+                OYUNU BAŞLAT
               </>
             ) : (
               <>
-                <Download size={20} />
-                YÜKLENMEMIŞ
+                <Download size={15} />
+                YÜKLENMEMİŞ
               </>
             )}
           </button>
 
           {/* İstatistik kartları */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {/* Toplam süre */}
-            <div className="rounded-xl p-4" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <Clock size={14} style={{ color: 'var(--color-accent-indigo)' }} />
-                <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Toplam Süre</span>
+            <div className="rounded-2xl p-4 glass border border-border-subtle">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Clock size={13} className="text-accent-indigo" />
+                <span className="text-[10px] font-bold tracking-wider uppercase text-text-muted">Toplam Süre</span>
               </div>
-              <p className="text-xl font-bold" style={{ color: 'var(--color-text-bright)' }}>
+              <p className="text-lg font-bold font-display text-text-bright">
                 {formatPlaytime(game.total_playtime_minutes)}
               </p>
             </div>
 
             {/* Son oynama */}
-            <div className="rounded-xl p-4" style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar size={14} style={{ color: 'var(--color-accent-emerald)' }} />
-                <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Son Oynama</span>
+            <div className="rounded-2xl p-4 glass border border-border-subtle">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Calendar size={13} className="text-accent-emerald" />
+                <span className="text-[10px] font-bold tracking-wider uppercase text-text-muted">Son Oynama</span>
               </div>
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-bright)' }}>
+              <p className="text-xs font-semibold text-text-bright mt-0.5">
                 {formatLastPlayed(game.last_played_at)}
               </p>
             </div>
           </div>
 
           {/* Durum değiştirici */}
-          <div>
-            <label className="text-xs font-semibold mb-2 block" style={{ color: 'var(--color-text-muted)' }}>
-              DURUM
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold tracking-wider uppercase text-text-muted">
+              OYUN DURUMU
             </label>
             <div className="relative">
               <button
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200"
-                style={{
-                  background: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border-subtle)',
-                }}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-bg-tertiary border border-border-subtle hover:border-border-strong hover:bg-bg-hover transition-all duration-200 cursor-pointer"
                 onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
               >
                 <GameStatusBadge status={game.status as GameStatus} size="md" />
                 <ChevronDown
-                  size={16}
+                  size={15}
+                  className="text-text-muted transition-transform duration-200"
                   style={{
-                    color: 'var(--color-text-muted)',
                     transform: statusDropdownOpen ? 'rotate(180deg)' : 'rotate(0)',
-                    transition: 'transform 0.2s',
                   }}
                 />
               </button>
@@ -222,30 +202,26 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
               {/* Dropdown menü */}
               {statusDropdownOpen && (
                 <div
-                  className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-10 animate-scale-in"
-                  style={{
-                    background: 'var(--color-bg-elevated)',
-                    border: '1px solid var(--color-border-medium)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                  }}
+                  className="absolute top-full left-0 right-0 mt-1.5 rounded-xl overflow-hidden z-10 animate-scale-in glass-strong border border-border-strong"
                 >
-                  {allStatuses.map((status) => (
-                    <button
-                      key={status}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all duration-150"
-                      style={{
-                        background: game.status === status ? 'var(--color-bg-hover)' : 'transparent',
-                        color: 'var(--color-text-primary)',
-                      }}
-                      onClick={() => {
-                        updateGameStatus(game.id, status);
-                        setStatusDropdownOpen(false);
-                      }}
-                    >
-                      <GameStatusBadge status={status} size="sm" />
-                      <span className="text-sm">{statusLabels[status]}</span>
-                    </button>
-                  ))}
+                  {allStatuses.map((status) => {
+                    const isSelected = game.status === status;
+                    return (
+                      <button
+                        key={status}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 cursor-pointer ${
+                          isSelected ? 'bg-bg-hover text-accent-indigo font-semibold' : 'text-text-primary hover:bg-bg-tertiary/60'
+                        }`}
+                        onClick={() => {
+                          updateGameStatus(game.id, status);
+                          setStatusDropdownOpen(false);
+                        }}
+                      >
+                        <GameStatusBadge status={status} size="sm" />
+                        <span className="text-xs font-medium">{statusLabels[status]}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -253,19 +229,15 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
 
           {/* Kurulum bilgileri */}
           {game.install_path && (
-            <div>
-              <label className="text-xs font-semibold mb-2 block" style={{ color: 'var(--color-text-muted)' }}>
-                KURULUM YOLU
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold tracking-wider uppercase text-text-muted">
+                KURULUM DİZİNİ
               </label>
               <div
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-                style={{
-                  background: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border-subtle)',
-                }}
+                className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-bg-tertiary border border-border-subtle"
               >
-                <HardDrive size={14} style={{ color: 'var(--color-text-muted)' }} />
-                <span className="text-xs truncate flex-1" style={{ color: 'var(--color-text-secondary)' }}>
+                <HardDrive size={13} className="text-text-muted" />
+                <span className="text-xs truncate flex-1 font-medium text-text-secondary select-all" title={game.install_path}>
                   {game.install_path}
                 </span>
               </div>
@@ -273,19 +245,15 @@ export function GameDetailPanel({ onLaunch }: GameDetailPanelProps) {
           )}
 
           {/* Oyun ID bilgisi */}
-          <div>
-            <label className="text-xs font-semibold mb-2 block" style={{ color: 'var(--color-text-muted)' }}>
-              OYUN KIMLIĞI
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold tracking-wider uppercase text-text-muted">
+              OYUN KİMLİĞİ
             </label>
             <div
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-              style={{
-                background: 'var(--color-bg-secondary)',
-                border: '1px solid var(--color-border-subtle)',
-              }}
+              className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-bg-tertiary border border-border-subtle"
             >
-              <ExternalLink size={14} style={{ color: 'var(--color-text-muted)' }} />
-              <span className="text-xs font-mono" style={{ color: 'var(--color-text-secondary)' }}>
+              <ExternalLink size={13} className="text-text-muted" />
+              <span className="text-xs font-mono font-medium text-text-secondary select-all">
                 {game.platform_name === 'Steam' ? `AppID: ${game.external_game_id}` : game.external_game_id}
               </span>
             </div>

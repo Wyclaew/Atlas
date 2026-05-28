@@ -2,7 +2,7 @@
 // Grid'de her bir oyunu gösteren kart: kapak görseli, hover overlay, platform ikonu, süre
 
 import { useState } from 'react';
-import { Play, Heart, Monitor, Swords, FolderOpen, Clock, Download } from 'lucide-react';
+import { Play, Heart, Monitor, Swords, FolderOpen, Clock, Download, Gamepad2 } from 'lucide-react';
 import { useGameStore, formatPlaytime } from '../../stores/useGameStore';
 import { GameStatusBadge } from './GameStatusBadge';
 import type { Game, PlatformName, GameStatus } from '../../types';
@@ -19,25 +19,11 @@ const platformIcons: Record<PlatformName, typeof Monitor> = {
   Custom: FolderOpen,
 };
 
-const platformColors: Record<PlatformName, string> = {
-  Steam: '#66c0f4',
-  Epic: '#ffffff',
-  Custom: '#a855f7',
+const platformColorClasses: Record<PlatformName, string> = {
+  Steam: 'text-sky-400',
+  Epic: 'dark:text-white text-slate-800',
+  Custom: 'text-purple-500',
 };
-
-// Varsayılan kapak görseli (gradient placeholder)
-const DEFAULT_COVER = 'data:image/svg+xml,' + encodeURIComponent(`
-  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="450">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#1a1a2e"/>
-        <stop offset="100%" style="stop-color:#22223a"/>
-      </linearGradient>
-    </defs>
-    <rect width="300" height="450" fill="url(#g)"/>
-    <text x="150" y="225" text-anchor="middle" fill="#4a4a66" font-family="sans-serif" font-size="48">🎮</text>
-  </svg>
-`);
 
 export function GameCard({ game, onLaunch }: GameCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -45,52 +31,56 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
   const { setSelectedGame, toggleFavorite } = useGameStore();
 
   const PlatformIcon = platformIcons[game.platform_name] ?? FolderOpen;
-  const platformColor = platformColors[game.platform_name] ?? '#888';
+  const platformColorClass = platformColorClasses[game.platform_name] ?? 'text-text-muted';
   const isInstalled = typeof game.is_installed === 'boolean' ? game.is_installed : game.is_installed === 1;
   const isFavorite = typeof game.is_favorite === 'boolean' ? game.is_favorite : game.is_favorite === 1;
-  const coverSrc = imgError || !game.cover_image_url ? DEFAULT_COVER : game.cover_image_url;
+  const hasCover = !imgError && game.cover_image_url;
 
   return (
     <div
-      className="relative rounded-xl overflow-hidden cursor-pointer group card-hover"
-      style={{
-        background: 'var(--color-bg-secondary)',
-        border: '1px solid var(--color-border-subtle)',
-        aspectRatio: '2 / 3',
-      }}
+      className="relative rounded-2xl overflow-hidden cursor-pointer group card-hover bg-bg-secondary border border-border-subtle aspect-[2/3]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedGame(game)}
     >
-      {/* Kapak görseli */}
-      <img
-        src={coverSrc}
-        alt={game.title}
-        className="w-full h-full object-cover transition-transform duration-500"
-        style={{
-          transform: isHovered ? 'scale(1.08)' : 'scale(1)',
-        }}
-        onError={() => setImgError(true)}
-        loading="lazy"
-      />
+      {/* Kapak görseli veya Placeholder */}
+      {!hasCover ? (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-bg-tertiary via-bg-secondary to-bg-elevated text-accent-indigo p-4 select-none transition-all duration-300">
+          <div className="w-12 h-12 rounded-2xl bg-accent-indigo-glow flex items-center justify-center mb-3">
+            <Gamepad2 size={24} className="text-accent-indigo animate-pulse" />
+          </div>
+          <span className="text-xs font-semibold px-2 text-center text-text-secondary line-clamp-2 font-display">
+            {game.title}
+          </span>
+        </div>
+      ) : (
+        <img
+          src={game.cover_image_url || undefined}
+          alt={game.title}
+          className="w-full h-full object-cover transition-transform duration-700 ease-smooth"
+          style={{
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+          }}
+          onError={() => setImgError(true)}
+          loading="lazy"
+        />
+      )}
 
       {/* Üst-sol: Platform ikonu */}
       <div
-        className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md glass"
-        style={{ fontSize: '0.65rem' }}
+        className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-xl glass text-[10px] font-bold"
       >
-        <PlatformIcon size={12} style={{ color: platformColor }} />
-        <span style={{ color: 'var(--color-text-secondary)' }}>{game.platform_name}</span>
+        <PlatformIcon size={12} className={platformColorClass} />
+        <span className="text-text-secondary">{game.platform_name}</span>
       </div>
 
       {/* Üst-sağ: Favori butonu */}
       <button
-        className="absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200"
-        style={{
-          background: isFavorite ? 'rgba(244, 63, 94, 0.2)' : 'rgba(0,0,0,0.4)',
-          opacity: isHovered || isFavorite ? 1 : 0,
-          transform: isHovered ? 'scale(1)' : 'scale(0.8)',
-        }}
+        className={`absolute top-3 right-3 p-2 rounded-xl transition-all duration-300 border ${
+          isFavorite 
+            ? 'bg-rose-500/20 border-rose-500/40 text-rose-500 opacity-100 scale-100' 
+            : 'bg-black/40 border-white/5 text-white/70 hover:text-white hover:bg-black/60 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 cursor-pointer'
+        }`}
         onClick={(e) => {
           e.stopPropagation();
           toggleFavorite(game.id);
@@ -98,24 +88,18 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
         title={isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
       >
         <Heart
-          size={14}
-          fill={isFavorite ? '#f43f5e' : 'none'}
-          color={isFavorite ? '#f43f5e' : 'white'}
+          size={13}
+          fill={isFavorite ? 'currentColor' : 'none'}
         />
       </button>
 
-      {/* Alt gradient overlay — her zaman görünür */}
+      {/* Alt gradyan overlay — her zaman görünür, temaya duyarlı */}
       <div
-        className="absolute inset-x-0 bottom-0 p-3"
-        style={{
-          background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%)',
-          paddingTop: '48px',
-        }}
+        className="absolute inset-x-0 bottom-0 p-4 pt-16 bg-gradient-to-t from-bg-secondary via-bg-secondary/80 to-transparent flex flex-col justify-end min-h-[100px]"
       >
         {/* Oyun başlığı */}
         <h3
-          className="text-sm font-semibold truncate mb-1"
-          style={{ color: 'var(--color-text-bright)' }}
+          className="text-sm font-bold font-display text-text-bright truncate mb-1"
           title={game.title}
         >
           {game.title}
@@ -123,36 +107,34 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
 
         {/* Alt bilgiler: süre + durum */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-            {game.total_playtime_minutes > 0 && (
-              <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                <Clock size={10} />
+          <div className="flex items-center gap-1 text-text-secondary">
+            {game.total_playtime_minutes > 0 ? (
+              <span className="flex items-center gap-1 text-xs">
+                <Clock size={11} className="text-text-muted" />
                 {formatPlaytime(game.total_playtime_minutes)}
               </span>
+            ) : (
+              <span className="text-[10px] font-medium text-text-muted">Süre yok</span>
             )}
           </div>
           <GameStatusBadge status={game.status as GameStatus} size="sm" />
         </div>
       </div>
 
-      {/* Hover overlay — oynat butonu */}
+      {/* Hover overlay — oynat / detay butonu */}
       <div
-        className="absolute inset-0 flex items-center justify-center transition-all duration-300"
-        style={{
-          background: isHovered ? 'rgba(0,0,0,0.45)' : 'transparent',
-          opacity: isHovered ? 1 : 0,
-          pointerEvents: isHovered ? 'auto' : 'none',
-        }}
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+          isHovered ? 'bg-black/30 backdrop-blur-[2px] opacity-100' : 'bg-transparent opacity-0 pointer-events-none'
+        }`}
       >
         <button
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300"
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold font-display text-xs tracking-wider transition-all duration-300 cursor-pointer ${
+            isInstalled
+              ? 'bg-gradient-to-r from-accent-indigo to-accent-purple text-white shadow-[0_8px_25px_var(--accent-indigo-glow)]'
+              : 'bg-gradient-to-r from-accent-emerald to-accent-emerald-glow text-white shadow-[0_8px_25px_var(--accent-emerald-glow)]'
+          }`}
           style={{
-            background: isInstalled
-              ? 'linear-gradient(135deg, var(--color-accent-indigo), #4f46e5)'
-              : 'linear-gradient(135deg, var(--color-accent-emerald), #059669)',
-            color: 'white',
-            transform: isHovered ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(8px)',
-            boxShadow: isHovered ? '0 8px 32px rgba(99, 102, 241, 0.4)' : 'none',
+            transform: isHovered ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(12px)',
           }}
           onClick={(e) => {
             e.stopPropagation();
@@ -165,12 +147,12 @@ export function GameCard({ game, onLaunch }: GameCardProps) {
         >
           {isInstalled ? (
             <>
-              <Play size={16} fill="white" />
+              <Play size={14} fill="white" />
               OYNA
             </>
           ) : (
             <>
-              <Download size={16} />
+              <Download size={14} />
               DETAY
             </>
           )}

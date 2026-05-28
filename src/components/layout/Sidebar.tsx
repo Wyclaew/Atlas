@@ -89,31 +89,21 @@ export function Sidebar() {
 
   return (
     <aside
-      className="flex flex-col h-screen border-r"
-      style={{
-        width: '260px',
-        minWidth: '260px',
-        background: 'var(--color-bg-secondary)',
-        borderColor: 'var(--color-border-subtle)',
-      }}
+      className="flex flex-col h-screen border-r w-[260px] min-w-[260px] bg-bg-secondary border-border-subtle"
     >
       {/* Logo / Başlık */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-border-subtle">
         <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{
-            background: 'linear-gradient(135deg, var(--color-accent-indigo), var(--color-accent-purple))',
-            boxShadow: '0 4px 15px var(--color-accent-indigo-glow)',
-          }}
+          className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-accent-indigo to-accent-purple shadow-[0_4px_15px_var(--accent-indigo-glow)]"
         >
-          <Gamepad2 size={20} color="white" />
+          <Gamepad2 size={18} className="text-white" />
         </div>
         <div>
-          <h1 className="text-sm font-bold" style={{ color: 'var(--color-text-bright)' }}>
+          <h1 className="text-sm font-bold font-display text-text-bright">
             Game Manager
           </h1>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)', fontSize: '0.65rem' }}>
-            Kütüphane Yöneticisi
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+            KÜTÜPHANE YÖNETİCİSİ
           </p>
         </div>
       </div>
@@ -127,7 +117,7 @@ export function Sidebar() {
 
         {/* Platformlar */}
         <div>
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-text-muted">
             Platformlar
           </p>
           <nav className="space-y-1">
@@ -137,7 +127,7 @@ export function Sidebar() {
 
         {/* Koleksiyonlar */}
         <div>
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-text-muted">
             Koleksiyonlar
           </p>
           <nav className="space-y-1">
@@ -147,30 +137,30 @@ export function Sidebar() {
       </div>
 
       {/* Alt Bilgi — İstatistikler & Ayarlar */}
-      <div className="px-3 py-4 border-t space-y-3" style={{ borderColor: 'var(--color-border-subtle)' }}>
+      <div className="px-3 py-4 border-t border-border-subtle space-y-4">
         {/* Mini istatistik kartları */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-lg px-3 py-2" style={{ background: 'var(--color-bg-tertiary)' }}>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Toplam</p>
-            <p className="text-lg font-bold" style={{ color: 'var(--color-accent-indigo)' }}>
+          <div className="rounded-xl px-3.5 py-2.5 bg-bg-tertiary border border-border-subtle hover:border-border-strong transition-all duration-300">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Toplam</p>
+            <p className="text-lg font-bold font-display text-accent-indigo mt-0.5">
               {stats.totalGames}
             </p>
           </div>
-          <div className="rounded-lg px-3 py-2" style={{ background: 'var(--color-bg-tertiary)' }}>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Süre</p>
-            <p className="text-lg font-bold" style={{ color: 'var(--color-accent-emerald)' }}>
+          <div className="rounded-xl px-3.5 py-2.5 bg-bg-tertiary border border-border-subtle hover:border-border-strong transition-all duration-300">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Süre</p>
+            <p className="text-lg font-bold font-display text-accent-emerald mt-0.5">
               {stats.totalPlaytimeHours}
-              <span className="text-xs font-normal ml-0.5">sa</span>
+              <span className="text-[10px] font-semibold font-sans text-text-secondary ml-0.5">sa</span>
             </p>
           </div>
         </div>
 
         {/* Senkronizasyon durumu */}
         {isSyncing && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'var(--color-bg-tertiary)' }}>
-            <RefreshCw size={14} className="animate-spin" style={{ color: 'var(--color-accent-indigo)' }} />
-            <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-              Senkronize ediliyor...
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-bg-tertiary border border-border-subtle animate-pulse">
+            <RefreshCw size={12} className="animate-spin text-accent-indigo" />
+            <span className="text-xs font-semibold text-text-secondary">
+              Eşzamanlanıyor...
             </span>
           </div>
         )}
@@ -178,15 +168,15 @@ export function Sidebar() {
         {/* Ayarlar butonu */}
         <button
           onClick={() => setActiveNav('settings')}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200"
-          style={{
-            background: activeNav === 'settings' ? 'var(--color-bg-elevated)' : 'transparent',
-            color: activeNav === 'settings' ? 'var(--color-text-bright)' : 'var(--color-text-secondary)',
-          }}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
+            activeNav === 'settings' 
+              ? 'bg-bg-elevated text-text-bright border border-border-medium' 
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border border-transparent'
+          }`}
         >
-          <Settings size={18} />
-          <span className="flex-1 text-sm font-medium">Ayarlar</span>
-          <ChevronRight size={14} style={{ color: 'var(--color-text-muted)' }} />
+          <Settings size={16} />
+          <span className="flex-1 text-sm font-semibold">Ayarlar</span>
+          <ChevronRight size={14} className="text-text-muted" />
         </button>
       </div>
     </aside>
