@@ -1,108 +1,88 @@
-# 🎮 Game Manager (Kütüphane ve Oyun Yöneticisi)
+# Atlas — Cross-Platform Game Library Hub
 
-Game Manager; Steam ve Epic Games Store kütüphanelerinizi tek bir çatı altında birleştiren, yerel kurulumlarınızı yönetmenizi sağlayan, oyun sürelerinizi takip eden ve tüm bunları son derece şık, modern ve performanslı bir arayüzle sunan çapraz platform (Windows odaklı) bir masaüstü uygulamasıdır.
+One home for every store. Atlas pulls your games, **playtime** and **achievements**
+from multiple platforms into a single, fast, good-looking desktop app — and lets you
+launch (and, later, install) them. It's lightweight (Tauri + Rust), runs on **macOS and
+Windows**, and keeps everything **local** — nothing is sent to any server of ours.
 
-Tauri v2 ve Rust backend altyapısı sayesinde minimum bellek tüketimiyle (low memory footprint) arka planda sessizce ve performansla çalışır. Frontend tarafında ise React, TypeScript ve en yeni Tailwind CSS v4 teknolojileri kullanılarak akıcı bir kullanıcı deneyimi hedeflenmiştir.
-
----
-
-## ✨ Öne Çıkan Özellikler
-
-* **🔌 Çift Platform Entegrasyonu:** Steam ve Epic Games Store hesaplarınızı bağlayarak tüm oyunlarınızı tek bir panelde listeleyin.
-* **📦 Yerel Oyun Yönetimi:** Bilgisayarınızda kurulu olan oyunları otomatik tespit edin, kurulu olmayanları görüntüleyin.
-* **⏱️ Süre Takibi (Playtime Tracking):** Oyun oynama sürelerinizi dakika hassasiyetinde takip edin ve toplam oynama sürenizi analiz edin.
-* **⚡ Ultra Performanslı Arayüz:** `@tanstack/react-virtual` ile sanallaştırılmış oyun listesi sayesinde binlerce oyunluk kütüphanelerde bile donma olmadan akıcı kaydırma (scrolling).
-* **🎨 Premium & Dinamik Tasarım:** Tailwind CSS v4 ile geliştirilmiş modern koyu tema, cam efekti (glassmorphism), yumuşak geçiş animasyonları ve kullanıcı dostu yerleşim.
-* **💾 Yerel Veritabanı:** Verileriniz tamamen sizin kontrolünüzde! SQLite tabanlı Tauri SQL plugin'i ile tüm kütüphaneniz ve süreleriniz yerel olarak şifreli/güvenli bir şekilde saklanır.
-* **⭐ Favoriler & Durum Yönetimi:** Oyunlarınızı favorilere ekleyin; "Oynanıyor", "Bitirildi", "İstek Listesi" veya "Kitaplıkta" gibi kategorilerle düzenleyin.
+> Think *Playnite + Heroic*, but cross-platform and light on resources.
 
 ---
 
-## 🛠️ Teknolojik Yığın
+## Status
 
-* **Backend:** Rust, Tauri v2
-* **Veritabanı:** SQLite (Tauri SQL Plugin)
-* **Frontend:** React.js, TypeScript, Vite
-* **Tasarım & Stil:** Tailwind CSS v4, Lucide React (İkonlar)
-* **Durum Yönetimi:** Zustand (Hafif ve hızlı global state)
-* **Sanallaştırma:** @tanstack/react-virtual (Büyük veri kümeleri için)
+- ✅ **Steam** — fully integrated end-to-end: library, playtime, achievements, cover
+  art, launch (`steam://`).
+- 🧩 **Architecture is multi-platform from day one** — a pluggable connector pattern.
+  Epic, GOG and Xbox are scaffolded and shown in the UI as *coming soon*.
+- 🗺️ **Roadmap:** Epic (Legendary), GOG (gogdl), Xbox, then real downloads/installs and
+  own-launch playtime tracking.
 
----
+## Highlights
 
-## 📂 Proje Yapısı
+- **Unified library** across stores, de-duped by canonical title.
+- **Per-game dynamic color** — the UI borrows each cover's dominant color for the hero,
+  card focus and detail accents (a console-dashboard feel, not a generic template).
+- **Playtime & achievements** with progress, rarity %, and a cinematic detail view.
+- **Virtualized, responsive grid** that stays smooth with thousands of games.
+- **Local & private** — credentials and cache live in a local SQLite database.
 
-Proje temel olarak iki ana bölümden oluşmaktadır:
-1. **Rust Backend (`src-tauri/`):** Sistem seviyesindeki işlemleri (süre takibi, yerel uygulama başlatma, API entegrasyonları, disk taraması) gerçekleştirir.
-2. **Frontend (`src/`):** Kullanıcının etkileşime girdiği modern React arayüzüdür.
+## Tech stack
+
+| Layer | Choice |
+|------|--------|
+| Shell | **Tauri v2** (Rust) — small footprint, native, cross-platform |
+| Backend | Rust connectors (`reqwest`), `tauri-plugin-sql` (SQLite), `tauri-plugin-opener` |
+| Frontend | React 19 + TypeScript + Vite |
+| Styling | Tailwind CSS v4 (design tokens) |
+| State | Zustand |
+| Motion | Framer Motion |
+| Virtualization | `@tanstack/react-virtual` |
+
+## Project layout
 
 ```
-├── src/                      # React Frontend Kaynak Kodları
-│   ├── components/           # UI Bileşenleri (Layout, Games, Settings)
-│   ├── hooks/                # Özel React Hook'ları (useGameLauncher, useSync)
-│   ├── stores/               # Zustand Durum Yönetimi (useGameStore)
-│   ├── types/                # TypeScript Tip Tanımlamaları
-│   ├── App.tsx               # Ana Uygulama Bileşeni
-│   └── index.css             # Tailwind CSS v4 Giriş Dosyası
-│
-└── src-tauri/                # Rust Backend Kaynak Kodları
-    ├── capabilities/         # Tauri Yetkilendirme/Güvenlik Profilleri
-    ├── migrations/           # SQLite Veritabanı Migrasyon Dosyaları
-    ├── src/
-    │   ├── commands/         # Tauri IPC Komut İşleyicileri (Games, Sync, Launcher)
-    │   ├── sync/             # Steam ve Epic API Entegrasyon Mantığı
-    │   ├── lib.rs            # Uygulama Başlangıcı ve Eklenti Tanımlamaları
-    │   ├── models.rs         # Serde Modelleri ve Veri Yapıları
-    │   └── main.rs           # Giriş Noktası
-    └── Cargo.toml            # Rust Bağımlılıkları ve Yapılandırması
+src/                         React frontend
+  app/App.tsx                shell + view routing
+  features/                  dashboard · library · detail · accounts
+  components/{ui,layout}/     Button, Badges, CoverImage, Toasts, Sidebar, TopBar
+  store/useStore.ts          global state (talks to backend + local cache)
+  lib/                       db (SQLite), tauri (commands), color, format, select, meta
+  index.css                  design system (tokens, utilities, motion)
+src-tauri/                   Rust backend
+  src/connectors/            PlatformConnector pattern (steam.rs; epic/gog/xbox next)
+  src/commands/              accounts · sync · launch · system
+  migrations/001_init.sql    local cache schema
 ```
 
----
+## Getting started
 
-## 🚀 Başlangıç ve Kurulum
+Requirements: **Node 18+**, **Rust + Cargo** ([rustup](https://rustup.rs/)), and the
+platform build tools Tauri needs (Xcode CLT on macOS; MSVC build tools on Windows).
 
-### Gereksinimler
+```bash
+npm install
+npm run tauri dev      # run the desktop app
+npm run tauri build    # produce a packaged build
+npm run build          # type-check + bundle the frontend only
+```
 
-Projenin bilgisayarınızda derlenebilmesi ve çalışabilmesi için aşağıdaki araçların yüklü olması gerekmektedir:
-* **Node.js** (v18 veya üzeri önerilir)
-* **Rust & Cargo** (Rust'ı yüklemek için [rustup.rs](https://rustup.rs/) adresini ziyaret edin)
-* **C++ Build Tools** (Windows için derleme gereksinimleri)
+### Connecting Steam
 
-### Adımlar
+1. Open **Accounts & Settings**.
+2. Paste a **Steam Web API key** (`steamcommunity.com/dev/apikey`) and your
+   **SteamID64** (or profile/vanity name).
+3. Your Steam profile's **Game details** must be set to **Public** for playtime and
+   achievements to load.
 
-1. **Projeyi Klonlayın:**
-   ```bash
-   git clone https://github.com/Wyclaew/Game-Manager.git
-   cd "Game Manager"
-   ```
+Atlas validates the credentials, syncs your library, and caches it locally so the app
+is instant and works offline.
 
-2. **Bağımlılıkları Yükleyin:**
-   ```bash
-   npm install
-   ```
+## Privacy
 
-3. **Geliştirme Modunda Çalıştırın:**
-   Tauri geliştirme sunucusunu ve frontend sunucusunu eşzamanlı olarak başlatır:
-   ```bash
-   npm run tauri dev
-   ```
+Atlas talks to each platform directly. API keys, tokens, games, playtime and
+achievements are stored only in a local SQLite database on your machine.
 
-4. **Üretim Sürümünü Derleyin (Production Build):**
-   Uygulamanın optimize edilmiş `.exe` dosyasını oluşturur:
-   ```bash
-   npm run tauri build
-   ```
+## License
 
----
-
-## 🔒 Güvenlik ve İzinler
-
-Tauri v2'nin güvenlik odaklı yapısı gereği, uygulamamızın kullandığı tüm yerel yetenekler `src-tauri/capabilities/default.json` dosyasında açıkça tanımlanmıştır:
-* **SQL İzinleri:** SQLite veritabanının okunması ve yazılması için yetkilendirme.
-* **Shell İzinleri:** Harici oyun dosyalarının ve URL'lerin (Steam URI'leri) açılabilmesi için `opener` yetkilendirmesi.
-* **Dosya Sistemi İzinleri:** Yerel oyun dizinlerinin doğrulanması ve taranması için okuma izinleri.
-
----
-
-## 📄 Lisans
-
-Bu proje **MIT Lisansı** altında lisanslanmıştır. Daha fazla bilgi için `LICENSE` dosyasına (varsa) göz atabilirsiniz.
+MIT.

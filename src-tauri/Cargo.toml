@@ -1,8 +1,8 @@
 [package]
 name = "game-manager"
-version = "0.1.0"
-description = "Kişisel Oyun Kütüphanesi Yöneticisi — Steam & Epic Games toplayıcı"
-authors = ["you"]
+version = "0.2.0"
+description = "Atlas — unified cross-platform game library hub"
+authors = ["Atlas"]
 edition = "2021"
 
 [lib]
@@ -13,23 +13,31 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-# Tauri çekirdek ve plugin'ler
+# Tauri core + plugins
 tauri = { version = "2", features = [] }
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-shell = "2"
 tauri-plugin-opener = "2"
-tauri-plugin-fs = "2"
 
-# Serileştirme
+# Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
-# Hata yönetimi
+# Error handling
 thiserror = "1"
-anyhow = "1"
 
-# HTTP istemci (Steam/Epic API çağrıları için)
+# HTTP client (Steam Web API and future connectors).
+# Default features use the system TLS (Security.framework on macOS, SChannel on
+# Windows) — no OpenSSL dependency, and matches the previously-cached build.
 reqwest = { version = "0.12", features = ["json"] }
 
 # Async runtime
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[profile.release]
+# Lean release binary — small footprint
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

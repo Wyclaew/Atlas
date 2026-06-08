@@ -1,59 +1,45 @@
-// lib.rs — Tauri Uygulama Giriş Noktası
-// Tüm plugin'lerin kaydı, veritabanı migrasyonları ve komut handler'ları burada yapılır.
-// Bu dosya uygulamanın Rust tarafının kalbidir.
+// Atlas — Tauri application entry point.
+// Registers plugins, runs the local-cache migrations, and exposes commands.
 
 use tauri_plugin_sql::{Migration, MigrationKind};
 
 mod commands;
+mod connectors;
 pub mod error;
 mod models;
-mod sync;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Veritabanı migrasyonları — uygulama ilk açıldığında otomatik çalışır
-    let migrations = vec![
-        Migration {
-            version: 1,
-            description: "create_initial_tables",
-            sql: include_str!("../migrations/001_init.sql"),
-            kind: MigrationKind::Up,
-        },
-    ];
+    let migrations = vec![Migration {
+        version: 1,
+        description: "init",
+        sql: include_str!("../migrations/001_init.sql"),
+        kind: MigrationKind::Up,
+    }];
 
     tauri::Builder::default()
-        // ==========================================
-        // Plugin Kayıtları
-        // ==========================================
-        // SQLite veritabanı — migrasyon desteği ile
+        // Local SQLite cache (with migrations). Fresh db name avoids clashing
+        // with any stale schema from previous builds.
         .plugin(
             tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:gamemanager.db", migrations)
+                .add_migrations("sqlite:atlas.db", migrations)
                 .build(),
         )
-        // Shell — harici süreç çalıştırma (oyun başlatma)
-        .plugin(tauri_plugin_shell::init())
-        // Opener — URL/URI scheme açma (steam:// protokolü)
+        // Opener — hand off steam:// / store URLs to the OS.
         .plugin(tauri_plugin_opener::init())
-        // Filesystem — yerel dosya okuma (VDF/ACF dosyaları)
-        .plugin(tauri_plugin_fs::init())
-        // ==========================================
-        // Tauri Komut Handler'ları
-        // Frontend'den invoke() ile çağrılabilir komutlar
-        // ==========================================
+        // Shell — reserved for future native-launcher invocations.
+        .plugin(tauri_plugin_shell::init())
+        // Shared HTTP client for every connector.
+        .manage(connectors::http_client())
         .invoke_handler(tauri::generate_handler![
-            // Oyun CRUD işlemleri
-            commands::games::get_all_games,
-            commands::games::update_game_status,
-            commands::games::toggle_favorite,
-            commands::games::detect_platform_paths,
-            // Platform senkronizasyonu
+            commands::accounts::connect_steam,
             commands::sync::sync_steam_library,
-            commands::sync::sync_local_installations,
-            // Oyun başlatma ve oturum takibi
-            commands::launcher::launch_game,
-            commands::launcher::track_play_session,
+            commands::sync::fetch_steam_achievements,
+            commands::launch::launch_game,
+            commands::launch::install_game,
+            commands::launch::open_store_page,
+            commands::system::detect_platform_paths,
         ])
         .run(tauri::generate_context!())
-        .expect("Tauri uygulaması başlatılırken hata oluştu");
+        .expect("error while running Atlas");
 }

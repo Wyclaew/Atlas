@@ -1,86 +1,64 @@
-# 🤖 AI Agent El Kitabı (AGENTS.md)
+# AGENTS.md — working notes for AI agents
 
-Bu dosya, projede çalışacak olan yapay zeka geliştirme ajanlarının (AI Agents) proje yapısını, mimari kararlarını, veri modellerini ve teknik borçları/yapılacakları hızlıca anlamaları ve kendilerini güncel tutabilmeleri amacıyla oluşturulmuştur.
+Keep this current after any structural change.
 
-> [!IMPORTANT]
-> **Ajanlar İçin Kural:** Bu projede yapılan her büyük yapısal veya mimari değişiklikten sonra bu dosyayı güncelleyin!
+## What this is
 
----
+Atlas: a cross-platform (macOS + Windows) game library hub built on **Tauri v2 + React +
+TypeScript + Tailwind v4**. It aggregates a user's games/playtime/achievements from
+multiple stores into a local SQLite cache and a polished UI. Steam ships first; the
+codebase is structured to add more platforms.
 
-## 📌 Proje Durumu ve Özet
+## Architecture (read before editing)
 
-* **Proje Adı:** Game Manager
-* **Hedef İşlev:** Steam & Epic Games Store kütüphanelerini birleştiren, playtime takibi ve oyun başlatma yeteneklerine sahip yerel oyun kütüphanesi yöneticisi.
-* **Hedef Platform:** Windows (Öncelikli) & macOS (İkincil).
-* **Aktif Durum:** 
-  * **Tasarım Yenilemesi (Obsidian Dark & Ember Glow - Faz 12):** Sidebar bileşeni, piksel-kusursuz ve dikey ritimli bir şekilde tamamen sıfırdan yazıldı. Genişlik `w-72 bg-[#090A0F]` ile zengin nefes alma alanlarına kavuşturuldu, buton paddingleri `py-3.5` ve metin boyutu `text-[15px]` yapıldı. Aktif durum göstergesi absolute hizalı şık bir çizgiye dönüştürülerek hizalama kayması (glit) çözüldü. Dinamik sayaç rozetleri (`bg-white/[0.04]`) ve mapped gezinme öğeleri eklendi.
-  * **Tasarım Yenilemesi (Cyber-Minimalist Obsidian):** Saf obsidian koyu teması (`#090a0f`) ile Coral-Ember gradyanlı (`from-orange-500 to-rose-600`) mikro etkileşimler ve aktif durum vurguları uygulandı. `framer-motion` kütüphanesi kullanılarak sayfa geçişleri, detay paneli, toast bildirimleri ve oyun kartı hover durumları akıcı mikro animasyonlarla zenginleştirildi. 
-  * **Hata Yönetimi ve Veritabanı:** Rust tarafında `thiserror` ve `anyhow` tabanlı merkezi hata yönetimi (`AppError`) kuruldu. SQLite üzerinde arama, platform ve favori filtrelemeleri için kompozit indeks optimizasyonları tamamlandı.
-  * **Frontend:** React + TypeScript + Zustand tabanlı sanallaştırılmış modern frontend, global dynamic Toast bildirim portalı ve tema sistemiyle zenginleştirildi.
-  * Proje en son tasarım ve mimari revizyonla birlikte GitHub reposuna commitlendi.
-  * **Otomatik Platform Yol Tespiti (Faz 10):** Rust tarafında Windows ve macOS işletim sistemlerinde varsayılan Steam ve Epic Games kurulum yollarını kontrol edip dönen `detect_platform_paths` komutu eklendi. Ayarlar menüsü ilk yüklendiğinde yollar boşsa bu komut yardımıyla otomatik doldurulmaktadır.
-  * **Ayarlar ve Sidebar Tasarım İyileştirmesi:** Ayarlar menüsü ekranı ortalayacak şekilde `max-w-5xl` sınırıyla 2 sütunlu şık kart yapısına geçirilmiş, girdi alanlarındaki padding çakışmaları çözülmüştür. Tüm kartlar ve toggle butonları koyu/açık mod ile tam uyumlu hale getirilmiştir.
+- **Backend does I/O, frontend owns persistence.** Rust connectors fetch normalized data
+  from platform APIs and return it over IPC; the **frontend** writes it to SQLite via
+  `tauri-plugin-sql`. All DB logic lives in `src/lib/db.ts`.
+- **Connector pattern:** `src-tauri/src/connectors/` — each platform module exposes
+  `connect / fetch_library / fetch_achievements` and maps raw API → `models.rs`
+  (`NormalizedGame`, `AchievementSet`, …). Add a platform = new module + new commands in
+  `src-tauri/src/commands/` + register in `lib.rs`. Launch/install/store URIs are
+  dispatched by `platform_key` in `connectors/mod.rs::launch_uri`.
+- **State:** `src/store/useStore.ts` (Zustand) is the single source of truth for the UI;
+  it calls `lib/tauri.ts` (commands) and `lib/db.ts` (cache).
+- **Data model:** one `games` row per (platform_key, external_id). User fields
+  (`status`, `is_favorite`, `is_hidden`) and `accent_color` are **never** overwritten by
+  a re-sync. `canonical_key` enables cross-platform grouping later.
 
+## Conventions / gotchas
 
----
+- **DB connection string is `sqlite:atlas.db`** (must match `lib.rs` migration + `db.ts`).
+  A *new* migration version must be appended — never edit `001_init.sql` after release.
+- **No cross-call `BEGIN/COMMIT`** — `tauri-plugin-sql` pools connections. Batch with
+  multi-row inserts (`placeholderRows` in `db.ts`) so each statement is atomic.
+- **Tauri maps camelCase (JS) → snake_case (Rust)** command args automatically.
+- **Times** cross the IPC boundary as Unix seconds (`*_unix`); the frontend formats them
+  (`lib/format.ts`).
+- **Color extraction** (`lib/color.ts`) uses a separate CORS image, so a tainted canvas
+  just falls back to the default accent — display `<img>` never sets `crossOrigin`.
+- **Steam art** is built from the appid with a fallback chain (`lib/steamArt.ts`);
+  `library_600x900` is missing for some older apps.
+- **Achievements** are fetched on demand when the detail panel opens (rate-limit friendly)
+  and cached; "no achievements" games re-check each open.
 
-## 🛠️ Mimari ve Teknik Tercihler
+## Design language
 
-### 1. Tauri v2 (Rust Backend & IPC)
-* Neden? Düşük kaynak kullanımı, güvenli bellek yönetimi ve işletim sistemi API'lerine güvenli erişim.
-* **Hata Yönetimi (`AppError`):** Rust core tarafında `thiserror` ve `anyhow` tabanlı merkezi bir hata yönetimi yapısı (`src-tauri/src/error.rs`) kullanılır. Tauri IPC üzerinden frontend'e string olarak aktarılabilmesi için `serde::Serialize` implemente edilmiştir.
-* **IPC (Inter-Process Communication):** İletişim Tauri komutları (Commands) ve Tauri SQL plugin'i üzerinden sağlanır. Komut imzaları `Result<T, AppError>` tipindedir.
-* **Tauri Yetenekleri (Capabilities):** `src-tauri/capabilities/default.json` altında tanımlıdır. Güvenlik kuralları gereği veritabanı ve web tarayıcı tetikleme izinleri sınırlandırılmıştır.
+Warm near-black canvas, **Space Grotesk + Inter**, a restrained lime signature accent,
+and per-game color from cover art. Deliberately *not* the stock blue/purple AI dashboard.
+Tokens live in `src/index.css` `@theme`. Motion via Framer Motion; respect
+`prefers-reduced-motion`.
 
-### 2. Frontend & Arayüz
-* **React + TypeScript:** Statik tip güvenliği.
-* **Tailwind CSS v4 & Stiller:** Vite entegrasyonu ile yerleşik CSS değişkenleri ve ultra hızlı derleme süreleri sunan en son sürüm. Renkler ve glassmorphism özellikleri tamamen vanilla CSS değişkenleriyle yönetilmektedir.
-* **Framer Motion:** Arayüzün native hissettirmesi için sayfa geçişleri, modal/panel açılışları ve buton mikro-etkileşimleri 0.15s - 0.3s arası animasyonlarla canlandırılmıştır.
-* **Ortak UI Bileşenleri:** Kod tekrarını engellemek amacıyla `src/components/ui/` altında tip-güvenli `SidebarButton.tsx`, `InputField.tsx` ve `ActionButton.tsx` bileşenleri çıkarılmıştır.
-* **Zustand (`src/stores/useGameStore.ts`):** Uygulamanın global state'ini yönetir. SQLite ile senkronize çalışır. Global Toast bildirim listesi ve aktif tema bu store üzerinden yönetilir.
-* **Sanallaştırma (`@tanstack/react-virtual`):** Büyük oyun listelerinin DOM'u şişirmeden performanslı bir şekilde çizilmesi için kullanılmıştır.
+## Verify
 
-### 3. Veritabanı Mimarisi (SQLite)
-`src-tauri/migrations/001_init.sql` dosyasındaki şema kullanılır. Ana tablolar:
-* `platforms`: Platform bilgileri (Steam, Epic, Custom vb.)
-* `games`: Oyun detayları (durum, favori, dosya yolları, süre bilgileri vb.)
-* `play_sessions`: Oyun oynama oturumları ve süre takibi verileri.
-* `settings`: Uygulama ayarları (API anahtarları, kullanıcı tercihleri vb.)
-* **Performans İndeksleri:** Arama, platform, favori ve durum filtrelemelerinin anlık çalışması için `games` tablosunda kompozit indeksler (`idx_games_search`, `idx_games_platform_status`, `idx_games_favorite`) tanımlanmıştır.
+- `npm run build` — type-check + bundle (must be clean).
+- `cd src-tauri && cargo check` — Rust must be clean.
+- `npm run tauri dev` — boots on macOS; confirm no panic and the webview loads.
 
+## Roadmap / backlog
 
----
-
-## 🔄 Entegrasyon Akışları
-
-### Steam Entegrasyonu
-* **Yöntem:** Steam Web API.
-* **Akış:** `src/hooks/useSync.ts` üzerinden tetiklenen akışta, Rust tarafındaki `sync_steam` komutu (`src-tauri/src/sync/steam.rs`) çağrılır. Kullanıcının Steam ID ve API Key bilgileriyle sahip olduğu oyunlar çekilir.
-* **Çalıştırma:** `steam://run/<appid>` protokolü aracılığıyla işletim sistemi seviyesinde tetiklenir.
-
-### Epic Games Entegrasyonu
-* **Yöntem:** Epic Games OAuth / Device Code Flow.
-* **Akış:** `src-tauri/src/sync/epic.rs` modülü Epic API'sine bağlanır. OAuth akışı web tabanlı giriş veya cihaz eşleştirme kodu (Device Code) ile çalışır. Oyun detayları (Catalog Items) ve görselleri Epic GraphQL/REST servislerinden çekilir.
-
----
-
-## 🚨 Bilinen Durumlar ve Teknik Detaylar
-
-1. **Rust Derleme Uyarıları ve Hataları:**
-   * `SteamGame` yapısında `Serialize` trait'inin bulunmaması hatası düzeltildi (`#[derive(Debug, Deserialize, Serialize)]`).
-   * `games.rs` ve `launcher.rs` dosyalarındaki kullanılmayan parametrelerin önüne alt çizgi (`_`) eklenerek derleme uyarıları (warnings) çözüldü.
-   * `serde::Deserialize` ve `Serialize` için `games.rs` dosyasındaki kullanılmayan import'lar kaldırıldı.
-2. **TypeScript Derleme Hataları:**
-   * `Sidebar.tsx` dosyasındaki kullanılmayan `ChevronRight` import'u kaldırıldı, Vite/TypeScript derleme sorunları çözüldü.
-3. **Geliştirme Ortamı:**
-   * Tauri v2 çalıştırmak için yerel sistemde Tauri CLI'ın (`npm run tauri`) kullanılması gereklidir.
-
-
----
-
-## 📋 Yapılacaklar Listesi (Backlog)
-
-- [ ] **Epic Games OAuth Testleri:** Cihaz kodu akışının uçtan uca doğrulanması.
-- [ ] **Yerel Oyun Taraması:** Windows işletim sisteminde `C:\Program Files (x86)\Steam\steamapps` dizinini otomatik tarayan Rust modülünün entegre edilmesi.
-- [ ] **Arka Plan Süre İzleme:** Oyun başlatıldıktan sonra Rust backend tarafında process izleme (process monitoring) yapılarak oyun kapandığında sürenin otomatik veritabanına kaydedilmesi (şu an süreyi frontend simüle ediyor).
-- [ ] **Görsel Önbellekleme:** Steam/Epic CDN'lerinden çekilen kapak görsellerinin yerel diske kaydedilerek offline modda da gösterilebilmesi.
+- [ ] Epic connector (Legendary-style OAuth + library), GOG (gogdl), Xbox.
+- [ ] Cross-platform ownership de-dupe surfaced in UI (group by `canonical_key`).
+- [ ] Real downloads/installs via bundled sidecars (Legendary/gogdl) — later phase.
+- [ ] Own-launch process-watch playtime tracking; periodic background sync.
+- [ ] Move credentials from SQLite to OS keychain (stronghold/keyring) for hardening.
+- [ ] Metadata/art enrichment (IGDB / SteamGridDB) for missing covers.

@@ -1,8 +1,9 @@
 {
   "name": "game-manager",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
+  "description": "Unified cross-platform game library hub — Steam, Epic, GOG, Xbox and more in one place",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

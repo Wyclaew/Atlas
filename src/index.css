@@ -1,242 +1,126 @@
-/* =============================================
-   Game Manager — Global Stiller (CSS Tema Sistemi)
-   Design Language: Cyber-Minimalist Obsidian & Ember
-   ============================================= */
+/* =============================================================
+   Atlas — Design System
+   Warm near-black canvas · editorial type · lime signature accent ·
+   per-game color driven by cover art. Deliberately not the stock
+   blue/purple "AI dashboard" look.
+   ============================================================= */
 
-/* Google Fonts — Modern Tipografi */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
-/* Tailwind CSS v4 */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* =============================================
-   Dinamik Tema Değişkenleri
-   ============================================= */
-:root {
-  /* Dark Theme (Cyber-Minimalist Obsidian - Varsayılan) */
-  --bg-primary: #090a0f; /* Pure Obsidian Dark */
-  --bg-secondary: rgba(20, 22, 28, 0.7); /* Translucent surface panel */
-  --bg-tertiary: #14161c;
-  --bg-elevated: rgba(30, 32, 40, 0.75);
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  
-  /* Kenarlık Renkleri */
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-medium: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  
-  /* Metin Renkleri */
-  --text-primary: #f1f5f9;
-  --text-secondary: #64748b; /* Slate Grey */
-  --text-muted: #475569;
-  --text-bright: #ffffff;
-  
-  /* Vurgu Renkleri (Ember Gradient & Muted Teal) */
-  --accent-ember-start: #f97316; /* Orange-500 */
-  --accent-ember-end: #e11d48; /* Rose-600 */
-  --accent-orange-glow: rgba(249, 115, 22, 0.15);
-  --accent-rose-glow: rgba(225, 29, 72, 0.15);
-  --accent-teal: #0d9488;
-  --accent-teal-glow: rgba(13, 148, 136, 0.15);
-  
-  --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.1);
-  --accent-amber: #d97706;
-  --accent-rose: #f43f5e;
-  
-  /* Platform Renkleri */
-  --steam: #171a21;
-  --steam-accent: #66c0f4;
-  --epic: #121212;
-  --epic-accent: #ffffff;
-  
-  /* Cam Efekti Arka Planları */
-  --bg-glass: rgba(13, 14, 18, 0.75);
-  --bg-glass-strong: rgba(9, 10, 15, 0.95);
-  
-  /* Gölgeler */
-  --shadow-premium: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.15);
-  --shadow-inner: inset 0 2px 5px rgba(0, 0, 0, 0.8);
-}
-
-[data-theme="light"] {
-  /* Light Theme (Studio Premium Soft Light - macOS / Windows Premium Contrast) */
-  --bg-primary: #f8fafc; /* Slate 50 - Temiz ve parlak zemin */
-  --bg-secondary: rgba(255, 255, 255, 0.75); /* Translucent pure white */
-  --bg-tertiary: #f1f5f9; /* Slate 100 */
-  --bg-elevated: #e2e8f0; /* Slate 200 */
-  --bg-hover: rgba(0, 0, 0, 0.03);
-  
-  /* Kenarlık Renkleri */
-  --border-subtle: rgba(15, 23, 42, 0.04);
-  --border-medium: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.15);
-  
-  /* Metin Renkleri */
-  --text-primary: #0f172a; /* Slate 900 */
-  --text-secondary: #475569; /* Slate 600 */
-  --text-muted: #64748b; /* Slate 500 */
-  --text-bright: #000000;
-  
-  /* Vurgu Renkleri */
-  --accent-ember-start: #f97316;
-  --accent-ember-end: #e11d48;
-  --accent-orange-glow: rgba(249, 115, 22, 0.1);
-  --accent-rose-glow: rgba(225, 29, 72, 0.1);
-  --accent-teal: #0d9488;
-  --accent-teal-glow: rgba(13, 148, 136, 0.1);
-  
-  --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.08);
-  --accent-amber: #d97706;
-  --accent-rose: #f43f5e;
-  
-  /* Platform Renkleri */
-  --steam: #e2e8f0;
-  --steam-accent: #0284c7;
-  --epic: #f1f5f9;
-  --epic-accent: #0f172a;
-  
-  /* Cam Efekti Arka Planları */
-  --bg-glass: rgba(255, 255, 255, 0.72);
-  --bg-glass-strong: rgba(255, 255, 255, 0.95);
-  
-  /* Gölgeler */
-  --shadow-premium: 0 30px 60px -15px rgba(15, 23, 42, 0.08);
-  --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.08);
-  --shadow-inner: inset 0 2px 4px rgba(15, 23, 42, 0.05);
-}
-
 @theme {
-  /* CSS Değişkenlerini Tailwind Sınıflarına Bağlama */
-  --color-bg-primary: var(--bg-primary);
-  --color-bg-secondary: var(--bg-secondary);
-  --color-bg-tertiary: var(--bg-tertiary);
-  --color-bg-elevated: var(--bg-elevated);
-  --color-bg-hover: var(--bg-hover);
-  --color-bg-glass: var(--bg-glass);
-  --color-bg-glass-strong: var(--bg-glass-strong);
-  
-  --color-border-subtle: var(--border-subtle);
-  --color-border-medium: var(--border-medium);
-  --color-border-strong: var(--border-strong);
-  
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-text-bright: var(--text-bright);
-  
-  --color-accent-ember-start: var(--accent-ember-start);
-  --color-accent-ember-end: var(--accent-ember-end);
-  --color-accent-orange-glow: var(--accent-orange-glow);
-  --color-accent-teal: var(--accent-teal);
-  --color-accent-teal-glow: var(--accent-teal-glow);
-  
-  --color-accent-emerald: var(--accent-emerald);
-  --color-accent-emerald-glow: var(--accent-emerald-glow);
-  --color-accent-amber: var(--accent-amber);
-  --color-accent-rose: var(--accent-rose);
-  
-  --color-steam: var(--steam);
-  --color-steam-accent: var(--steam-accent);
-  --color-epic: var(--epic);
-  --color-epic-accent: var(--epic-accent);
-  
-  /* Tipografi */
-  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  
-  /* Kolaylık Değerleri */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Surfaces — warm near-black, layered */
+  --color-bg:         #0a0a0c;
+  --color-surface:    #121217;
+  --color-surface-2:  #16161c;
+  --color-elevated:   #1d1d25;
+
+  /* Lines */
+  --color-line:        rgba(255, 255, 255, 0.07);
+  --color-line-strong: rgba(255, 255, 255, 0.13);
+
+  /* Text */
+  --color-text:  #f1f1f4;
+  --color-dim:   #9a9aa6;
+  --color-faint: #62626d;
+
+  /* Signature accent (used sparingly) + trophy gold */
+  --color-accent: #c8ff4d;
+  --color-gold:   #f5b942;
+
+  /* Status hues — warm + distinctive, not neon-stock */
+  --color-st-library:   #a1a1aa;
+  --color-st-playing:   #7cfca0;
+  --color-st-completed: #ffc857;
+  --color-st-wishlist:  #ff90b3;
+  --color-st-dropped:   #7c7c86;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* =============================================
-   Temel Stiller
-   ============================================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ---- Base ---- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-html {
-  font-family: var(--font-sans);
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.35s var(--ease-smooth), color 0.35s var(--ease-smooth);
-}
+html, body, #root { height: 100%; }
 
 body {
-  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   overflow: hidden;
-  background-color: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-#root {
-  min-height: 100vh;
-}
+/* Each game-context surface sets --g (its cover color). Falls back to accent. */
+:root { --g: var(--color-accent); }
 
-/* =============================================
-   Kaydırma Çubuğu (Scrollbar)
-   ============================================= */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
+h1, h2, h3, h4, .font-display { font-family: var(--font-display); }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::selection { background: color-mix(in srgb, var(--color-accent) 35%, transparent); }
 
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); background-clip: content-box; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* ---- Reusable surface treatments ---- */
+.card-surface {
+  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0));
+  border: 1px solid var(--color-line);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent-ember-start);
-}
-
-/* Cam Efekti (Glassmorphism) */
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-premium);
+  background: rgba(16, 16, 20, 0.72);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--color-line);
 }
 
-.glass-strong {
-  background: var(--bg-glass-strong);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border: 1px solid var(--border-medium);
-  box-shadow: var(--shadow-premium);
+/* Subtle dotted texture for empty/hero areas */
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-/* Tel Kafes Desen Arka Planı (Cyber-Minimalist Edit) */
-.wireframe-pattern {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 0),
-                    linear-gradient(rgba(255,255,255,0.005) 1px, transparent 0),
-                    linear-gradient(90deg, rgba(255,255,255,0.005) 1px, transparent 0);
-  background-size: 16px 16px, 8px 8px, 8px 8px;
-}
-[data-theme="light"] .wireframe-pattern {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.015) 1px, transparent 0),
-                    linear-gradient(rgba(0,0,0,0.002) 1px, transparent 0),
-                    linear-gradient(90deg, rgba(0,0,0,0.002) 1px, transparent 0);
+/* Gradient hairline border that picks up the game color on hover/focus */
+.ring-game { box-shadow: 0 0 0 1px var(--color-line); transition: box-shadow .25s var(--ease-out-expo); }
+.ring-game:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--g) 55%, transparent), 0 18px 50px -20px color-mix(in srgb, var(--g) 50%, transparent); }
+
+/* ---- Keyframes ---- */
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
+.animate-rise { animation: rise .5s var(--ease-out-expo) both; }
+.animate-fade { animation: fade .4s ease both; }
+
+/* Skeleton shimmer */
+.skeleton { position: relative; overflow: hidden; background: var(--color-surface-2); }
+.skeleton::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: shimmer 1.4s infinite;
 }
 
-/* Özel Animasyonlar */
-@keyframes pulse-glow-ember {
-  0%, 100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.15); }
-  50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3), 0 0 35px rgba(225, 29, 72, 0.15); }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow-ember 4s ease-in-out infinite;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

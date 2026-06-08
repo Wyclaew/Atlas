@@ -1,110 +1,132 @@
-import { Search, Grid3X3, List, SortAsc, SortDesc, Filter, RefreshCw } from 'lucide-react';
-import { useGameStore } from '../../stores/useGameStore';
+import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpDown, Check, LayoutGrid, List, RefreshCw, Search } from 'lucide-react';
+import { useStore } from '../../store/useStore';
+import { filterAndSort } from '../../lib/select';
+import { navTitle, navToView } from '../../lib/nav';
 import type { SortField } from '../../types';
 
-const sortOptions: { field: SortField; label: string }[] = [
-  { field: 'title', label: 'İsim' },
-  { field: 'playtime', label: 'Süre' },
-  { field: 'lastPlayed', label: 'Son Oynama' },
-  { field: 'status', label: 'Durum' },
+const SORTS: { id: SortField; label: string }[] = [
+  { id: 'recent', label: 'Recently played' },
+  { id: 'title', label: 'Name (A–Z)' },
+  { id: 'playtime', label: 'Most played' },
+  { id: 'achievements', label: 'Achievements' },
 ];
 
 export function TopBar() {
-  const {
-    filters, setFilter,
-    sortField, sortDirection, setSorting,
-    viewMode, setViewMode,
-    activeNav, filteredGames,
-    isSyncing,
-  } = useGameStore();
+  const activeNav = useStore((s) => s.activeNav);
+  const games = useStore((s) => s.games);
+  const search = useStore((s) => s.search);
+  const setSearch = useStore((s) => s.setSearch);
+  const sort = useStore((s) => s.sort);
+  const setSort = useStore((s) => s.setSort);
+  const viewMode = useStore((s) => s.viewMode);
+  const setViewMode = useStore((s) => s.setViewMode);
+  const syncAll = useStore((s) => s.syncAll);
+  const isSyncing = useStore((s) => s.isSyncing);
+  const accounts = useStore((s) => s.accounts);
+
+  const [sortOpen, setSortOpen] = useState(false);
+  const view = navToView(activeNav);
+  const isLibrary = view === 'library';
+
+  const count = useMemo(
+    () => (isLibrary ? filterAndSort(games, activeNav, search, sort).length : 0),
+    [games, activeNav, search, sort, isLibrary]
+  );
 
   return (
-    <header
-      className="sticky top-0 z-50 bg-[#050609]/80 backdrop-blur-md border-b border-white/[0.02] py-5 px-10 mb-8 flex items-center justify-between"
-    >
-      {/* Sol: Başlık ve Oyun Sayacı */}
-      <div className="flex items-center gap-5">
-        <h2 className="text-2xl font-bold tracking-tight text-white capitalize">
-          {activeNav === 'all' ? 'Tüm Kütüphane' : activeNav.replace('-', ' ')}
-        </h2>
-        
-        <div className="flex items-center gap-3">
-          <span className="text-[12px] font-bold px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.05] text-slate-400 tracking-widest uppercase">
-            {filteredGames.length} OYUN
-          </span>
-          {isSyncing && (
-            <div className="flex items-center justify-center p-1.5 rounded-full bg-cyan-500/10">
-              <RefreshCw size={14} className="animate-spin text-cyan-400" />
-            </div>
-          )}
-        </div>
+    <header className="sticky top-0 z-30 flex h-[72px] shrink-0 items-center gap-4 border-b border-line bg-bg/80 px-8 backdrop-blur-xl">
+      <div className="flex min-w-0 items-baseline gap-3">
+        <h1 className="font-display text-[22px] font-bold tracking-tight text-text">
+          {navTitle(activeNav)}
+        </h1>
+        {isLibrary && (
+          <span className="text-[13px] font-medium tabular-nums text-faint">{count} games</span>
+        )}
       </div>
 
-      {/* Sağ Grup: Arama ve Sorting Chips */}
-      <div className="flex flex-wrap items-center gap-4">
-        {/* Geniş Arama Kutusu */}
-        <div className="relative">
-          <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Kütüphanede ara..."
-            value={filters.search}
-            onChange={(e) => setFilter('search', e.target.value)}
-            className="w-56 focus:w-80 bg-white/[0.03] text-white text-[14px] placeholder-slate-500 pr-5 py-3 rounded-full border border-white/[0.05] focus:border-cyan-500/50 outline-none transition-all duration-300 shadow-inner"
-            style={{ paddingLeft: '44px' }}
-          />
-        </div>
+      <div className="ml-auto flex items-center gap-2.5">
+        {isLibrary && (
+          <>
+            <div className="relative">
+              <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search library…"
+                className="h-10 w-52 rounded-xl border border-line bg-surface-2 pl-10 pr-4 text-sm text-text placeholder:text-faint transition-[width,border-color] duration-300 focus:w-72 focus:border-line-strong focus:outline-none"
+              />
+            </div>
 
-        {/* Sorting Control Tags (Sleek Capsule Pills) */}
-        <div className="flex items-center gap-2">
-          {sortOptions.map((opt) => {
-            const isSelected = sortField === opt.field;
-            return (
+            <div className="relative">
               <button
-                key={opt.field}
-                onClick={() => setSorting(opt.field)}
-                className={`flex items-center gap-2 transition-all duration-150 cursor-pointer outline-none ${
-                  isSelected 
-                    ? 'bg-cyan-500 text-black px-4 py-2 rounded-full text-xs font-bold'
-                    : 'bg-white/[0.03] text-slate-400 border border-white/[0.04] px-4 py-2 rounded-full text-xs font-medium hover:text-white hover:border-white/[0.1]'
-                }`}
+                onClick={() => setSortOpen((o) => !o)}
+                onBlur={() => setTimeout(() => setSortOpen(false), 150)}
+                className="flex h-10 items-center gap-2 rounded-xl border border-line bg-surface-2 px-3.5 text-[13px] font-medium text-dim transition-colors hover:text-text"
               >
-                {opt.label}
-                {isSelected && (
-                  sortDirection === 'asc'
-                    ? <SortAsc size={14} className="text-black" />
-                    : <SortDesc size={14} className="text-black" />
-                )}
+                <ArrowUpDown size={15} />
+                {SORTS.find((s) => s.id === sort)?.label}
               </button>
-            );
-          })}
-        </div>
+              <AnimatePresence>
+                {sortOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.14 }}
+                    className="glass absolute right-0 top-12 z-40 w-52 overflow-hidden rounded-xl p-1.5 shadow-2xl shadow-black/50"
+                  >
+                    {SORTS.map((s) => (
+                      <button
+                        key={s.id}
+                        onMouseDown={() => {
+                          setSort(s.id);
+                          setSortOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[13px] transition-colors ${
+                          sort === s.id ? 'bg-white/[0.06] text-text' : 'text-dim hover:bg-white/[0.04] hover:text-text'
+                        }`}
+                      >
+                        {s.label}
+                        {sort === s.id && <Check size={14} className="text-accent" />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-        <div className="w-[1px] h-8 bg-white/[0.05] mx-2"></div>
+            <div className="flex h-10 items-center gap-1 rounded-xl border border-line bg-surface-2 p-1">
+              {([
+                ['grid', LayoutGrid],
+                ['list', List],
+              ] as const).map(([mode, Icon]) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`grid h-8 w-8 place-items-center rounded-lg transition-colors ${
+                    viewMode === mode ? 'bg-white/[0.08] text-text' : 'text-faint hover:text-dim'
+                  }`}
+                  aria-label={`${mode} view`}
+                >
+                  <Icon size={16} />
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Görünüm Modu Değiştirici (Pills) */}
-        <div className="flex items-center gap-2">
+        {accounts.length > 0 && (
           <button
-            onClick={() => setViewMode('grid')}
-            className={`transition-all duration-150 cursor-pointer outline-none flex items-center justify-center h-8 w-10 rounded-full ${
-              viewMode === 'grid' 
-                ? 'bg-cyan-500 text-black font-bold' 
-                : 'bg-white/[0.03] text-slate-400 border border-white/[0.04] hover:text-white hover:border-white/[0.1]'
-            }`}
+            onClick={() => void syncAll()}
+            disabled={isSyncing}
+            className="flex h-10 items-center gap-2 rounded-xl border border-line bg-surface-2 px-4 text-[13px] font-medium text-text transition-colors hover:border-line-strong disabled:opacity-50"
           >
-            <Grid3X3 size={16} />
+            <RefreshCw size={15} className={isSyncing ? 'animate-spin text-accent' : ''} />
+            {isSyncing ? 'Syncing' : 'Sync'}
           </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`transition-all duration-150 cursor-pointer outline-none flex items-center justify-center h-8 w-10 rounded-full ${
-              viewMode === 'list' 
-                ? 'bg-cyan-500 text-black font-bold' 
-                : 'bg-white/[0.03] text-slate-400 border border-white/[0.04] hover:text-white hover:border-white/[0.1]'
-            }`}
-          >
-            <List size={16} />
-          </button>
-        </div>
+        )}
       </div>
     </header>
   );
