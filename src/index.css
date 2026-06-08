@@ -1,159 +1,183 @@
 /* =============================================
-   Game Manager — Global Stiller (CSS Tema Sistemi)
-   Design Language: Cyber-Minimalist Obsidian & Ember
+   Game Manager — Global Stiller (Premium Design System)
+   Design Language: Modern Premium Minimalism
+   Inspiration: Aceternity UI + Componentry
    ============================================= */
 
-/* Google Fonts — Modern Tipografi */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Google Fonts — Premium Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 /* Tailwind CSS v4 */
 @import "tailwindcss";
 
 /* =============================================
-   Dinamik Tema Değişkenleri
+   Dinamik Tema Değişkenleri (Premium Edition)
    ============================================= */
 :root {
-  /* Dark Theme (Cyber-Minimalist Obsidian - Varsayılan) */
-  --bg-primary: #090a0f; /* Pure Obsidian Dark */
-  --bg-secondary: rgba(20, 22, 28, 0.7); /* Translucent surface panel */
-  --bg-tertiary: #14161c;
-  --bg-elevated: rgba(30, 32, 40, 0.75);
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  
-  /* Kenarlık Renkleri */
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-medium: rgba(255, 255, 255, 0.08);
+  /* Dark Theme (Premium Obsidian - Varsayılan) */
+  --bg-primary: #0a0a0a; /* Ultra deep black, premium feel */
+  --bg-secondary: rgba(15, 15, 15, 0.8); /* Subtle lighter surface */
+  --bg-tertiary: #1a1a1a;
+  --bg-elevated: rgba(25, 25, 25, 0.85);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-card: rgba(20, 20, 20, 0.6);
+
+  /* Kenarlık Renkleri (Refined) */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.10);
   --border-strong: rgba(255, 255, 255, 0.15);
-  
-  /* Metin Renkleri */
-  --text-primary: #f1f5f9;
-  --text-secondary: #64748b; /* Slate Grey */
-  --text-muted: #475569;
+
+  /* Metin Renkleri (Premium hierarchy) */
+  --text-primary: #f5f5f5; /* Softer white */
+  --text-secondary: #a0a0a0; /* Refined grey */
+  --text-muted: #707070;
   --text-bright: #ffffff;
-  
-  /* Vurgu Renkleri (Ember Gradient & Muted Teal) */
-  --accent-ember-start: #f97316; /* Orange-500 */
-  --accent-ember-end: #e11d48; /* Rose-600 */
-  --accent-orange-glow: rgba(249, 115, 22, 0.15);
-  --accent-rose-glow: rgba(225, 29, 72, 0.15);
-  --accent-teal: #0d9488;
-  --accent-teal-glow: rgba(13, 148, 136, 0.15);
-  
-  --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.1);
-  --accent-amber: #d97706;
-  --accent-rose: #f43f5e;
-  
+
+  /* Vurgu Renkleri (Refined & Subtle) */
+  --accent-primary: #6366f1; /* Indigo (modern, premium) */
+  --accent-primary-glow: rgba(99, 102, 241, 0.15);
+  --accent-secondary: #8b5cf6; /* Violet (complementary) */
+  --accent-accent: #f97316; /* Warm accent (Orange) */
+  --accent-accent-glow: rgba(249, 115, 22, 0.12);
+
+  /* Status & Semantic Colors */
+  --accent-success: #10b981;
+  --accent-success-glow: rgba(16, 185, 129, 0.12);
+  --accent-warning: #f59e0b;
+  --accent-warning-glow: rgba(245, 158, 11, 0.12);
+  --accent-error: #ef4444;
+  --accent-error-glow: rgba(239, 68, 68, 0.12);
+
   /* Platform Renkleri */
-  --steam: #171a21;
+  --steam: #1a1a1a;
   --steam-accent: #66c0f4;
-  --epic: #121212;
+  --epic: #1a1a1a;
   --epic-accent: #ffffff;
-  
-  /* Cam Efekti Arka Planları */
-  --bg-glass: rgba(13, 14, 18, 0.75);
-  --bg-glass-strong: rgba(9, 10, 15, 0.95);
-  
-  /* Gölgeler */
-  --shadow-premium: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.15);
-  --shadow-inner: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+
+  /* Cam Efekti Arka Planları (Enhanced) */
+  --bg-glass: rgba(15, 15, 15, 0.80);
+  --bg-glass-strong: rgba(10, 10, 10, 0.95);
+
+  /* Gölgeler (Refined) */
+  --shadow-xs: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --shadow-premium: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.15);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="light"] {
-  /* Light Theme (Studio Premium Soft Light - macOS / Windows Premium Contrast) */
-  --bg-primary: #f8fafc; /* Slate 50 - Temiz ve parlak zemin */
-  --bg-secondary: rgba(255, 255, 255, 0.75); /* Translucent pure white */
-  --bg-tertiary: #f1f5f9; /* Slate 100 */
-  --bg-elevated: #e2e8f0; /* Slate 200 */
-  --bg-hover: rgba(0, 0, 0, 0.03);
-  
+  /* Light Theme (Premium Studio Light) */
+  --bg-primary: #fafaf8; /* Warm off-white */
+  --bg-secondary: rgba(255, 255, 255, 0.85);
+  --bg-tertiary: #f5f5f0;
+  --bg-elevated: #efefeb;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-card: rgba(255, 255, 255, 0.7);
+
   /* Kenarlık Renkleri */
-  --border-subtle: rgba(15, 23, 42, 0.04);
-  --border-medium: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.15);
-  
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-medium: rgba(0, 0, 0, 0.10);
+  --border-strong: rgba(0, 0, 0, 0.15);
+
   /* Metin Renkleri */
-  --text-primary: #0f172a; /* Slate 900 */
-  --text-secondary: #475569; /* Slate 600 */
-  --text-muted: #64748b; /* Slate 500 */
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
   --text-bright: #000000;
-  
+
   /* Vurgu Renkleri */
-  --accent-ember-start: #f97316;
-  --accent-ember-end: #e11d48;
-  --accent-orange-glow: rgba(249, 115, 22, 0.1);
-  --accent-rose-glow: rgba(225, 29, 72, 0.1);
-  --accent-teal: #0d9488;
-  --accent-teal-glow: rgba(13, 148, 136, 0.1);
-  
-  --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.08);
-  --accent-amber: #d97706;
-  --accent-rose: #f43f5e;
-  
-  /* Platform Renkleri */
-  --steam: #e2e8f0;
+  --accent-primary: #6366f1;
+  --accent-primary-glow: rgba(99, 102, 241, 0.10);
+  --accent-secondary: #8b5cf6;
+  --accent-accent: #f97316;
+  --accent-accent-glow: rgba(249, 115, 22, 0.08);
+
+  /* Status Colors */
+  --accent-success: #059669;
+  --accent-success-glow: rgba(5, 150, 105, 0.10);
+  --accent-warning: #d97706;
+  --accent-warning-glow: rgba(217, 119, 6, 0.10);
+  --accent-error: #dc2626;
+  --accent-error-glow: rgba(220, 38, 38, 0.10);
+
+  /* Platform Colors */
+  --steam: #f0f0f0;
   --steam-accent: #0284c7;
-  --epic: #f1f5f9;
-  --epic-accent: #0f172a;
-  
-  /* Cam Efekti Arka Planları */
-  --bg-glass: rgba(255, 255, 255, 0.72);
+  --epic: #f5f5f0;
+  --epic-accent: #1a1a1a;
+
+  /* Glass Effects */
+  --bg-glass: rgba(255, 255, 255, 0.75);
   --bg-glass-strong: rgba(255, 255, 255, 0.95);
-  
-  /* Gölgeler */
-  --shadow-premium: 0 30px 60px -15px rgba(15, 23, 42, 0.08);
-  --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.08);
-  --shadow-inner: inset 0 2px 4px rgba(15, 23, 42, 0.05);
+
+  /* Shadows */
+  --shadow-xs: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.20);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-premium: 0 30px 60px -15px rgba(0, 0, 0, 0.20);
+  --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.10);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 @theme {
-  /* CSS Değişkenlerini Tailwind Sınıflarına Bağlama */
+  /* Background Colors */
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-tertiary: var(--bg-tertiary);
   --color-bg-elevated: var(--bg-elevated);
   --color-bg-hover: var(--bg-hover);
+  --color-bg-card: var(--bg-card);
   --color-bg-glass: var(--bg-glass);
   --color-bg-glass-strong: var(--bg-glass-strong);
-  
+
+  /* Border Colors */
   --color-border-subtle: var(--border-subtle);
   --color-border-medium: var(--border-medium);
   --color-border-strong: var(--border-strong);
-  
+
+  /* Text Colors */
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-bright: var(--text-bright);
-  
-  --color-accent-ember-start: var(--accent-ember-start);
-  --color-accent-ember-end: var(--accent-ember-end);
-  --color-accent-orange-glow: var(--accent-orange-glow);
-  --color-accent-teal: var(--accent-teal);
-  --color-accent-teal-glow: var(--accent-teal-glow);
-  
-  --color-accent-emerald: var(--accent-emerald);
-  --color-accent-emerald-glow: var(--accent-emerald-glow);
-  --color-accent-amber: var(--accent-amber);
-  --color-accent-rose: var(--accent-rose);
-  
+
+  /* Accent Colors */
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-glow: var(--accent-primary-glow);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-accent: var(--accent-accent);
+  --color-accent-accent-glow: var(--accent-accent-glow);
+
+  /* Status Colors */
+  --color-accent-success: var(--accent-success);
+  --color-accent-success-glow: var(--accent-success-glow);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-warning-glow: var(--accent-warning-glow);
+  --color-accent-error: var(--accent-error);
+  --color-accent-error-glow: var(--accent-error-glow);
+
+  /* Platform Colors */
   --color-steam: var(--steam);
   --color-steam-accent: var(--steam-accent);
   --color-epic: var(--epic);
   --color-epic-accent: var(--epic-accent);
-  
-  /* Tipografi */
-  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  
-  /* Kolaylık Değerleri */
+
+  /* Typography */
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  /* Animation */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =============================================
-   Temel Stiller
+   Temel Stiller (Premium Edition)
    ============================================= */
 * {
   margin: 0;
@@ -167,25 +191,38 @@ html {
   background-color: var(--color-bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.35s var(--ease-smooth), color 0.35s var(--ease-smooth);
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s var(--ease-smooth), color 0.4s var(--ease-smooth);
 }
 
 body {
   min-height: 100vh;
   overflow: hidden;
   background-color: var(--color-bg-primary);
+  line-height: 1.6;
 }
 
 #root {
   min-height: 100vh;
 }
 
+/* Premium Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  color: var(--color-text-secondary);
+}
+
 /* =============================================
-   Kaydırma Çubuğu (Scrollbar)
+   Kaydırma Çubuğu (Premium Scrollbar)
    ============================================= */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -193,50 +230,111 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 99px;
+  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent-ember-start);
+  background: var(--color-accent-primary);
 }
 
-/* Cam Efekti (Glassmorphism) */
+/* Firefox Scrollbar */
+* {
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-width: thin;
+}
+
+*:hover {
+  scrollbar-color: var(--color-accent-primary) transparent;
+}
+
+/* Cam Efekti (Enhanced Glassmorphism) */
 .glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-premium);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-md);
 }
 
 .glass-strong {
   background: var(--bg-glass-strong);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border: 1px solid var(--border-medium);
-  box-shadow: var(--shadow-premium);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-medium);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Tel Kafes Desen Arka Planı (Cyber-Minimalist Edit) */
-.wireframe-pattern {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 0),
-                    linear-gradient(rgba(255,255,255,0.005) 1px, transparent 0),
-                    linear-gradient(90deg, rgba(255,255,255,0.005) 1px, transparent 0);
-  background-size: 16px 16px, 8px 8px, 8px 8px;
-}
-[data-theme="light"] .wireframe-pattern {
-  background-image: radial-gradient(rgba(249, 115, 22, 0.015) 1px, transparent 0),
-                    linear-gradient(rgba(0,0,0,0.002) 1px, transparent 0),
-                    linear-gradient(90deg, rgba(0,0,0,0.002) 1px, transparent 0);
+.glass-accent {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(99, 102, 241, 0.20);
 }
 
-/* Özel Animasyonlar */
-@keyframes pulse-glow-ember {
-  0%, 100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.15); }
-  50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.3), 0 0 35px rgba(225, 29, 72, 0.15); }
+/* Desen Arka Planları (Premium Edition) */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow-ember 4s ease-in-out infinite;
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+[data-theme="light"] .grid-pattern {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.01) 1px, transparent 1px);
+}
+
+[data-theme="light"] .dot-pattern {
+  background-image: radial-gradient(circle, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+}
+
+/* Premium Animasyonlar */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--color-accent-primary-glow); }
+  50% { box-shadow: 0 0 40px var(--color-accent-primary-glow), 0 0 60px rgba(99, 102, 241, 0.08); }
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes slide-in-from-bottom {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-from-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float-subtle 3s ease-in-out infinite;
 }

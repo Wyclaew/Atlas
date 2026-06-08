@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Monitor, Swords, Key, User, FolderOpen, AlertCircle, Wifi, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Database from '@tauri-apps/plugin-sql';
 import { invoke } from '@tauri-apps/api/core';
 import { useSync } from '../../hooks/useSync';
@@ -73,90 +74,152 @@ export function SettingsPanel() {
   };
 
   return (
-    <div className="w-full h-full max-w-7xl mx-auto flex flex-col select-none">
-      
-      {/* Header Info */}
-      <div className="mb-12">
-        <h2 className="text-[32px] font-bold tracking-tight text-white mb-3">Bağlantılar ve Entegrasyonlar</h2>
-        <p className="text-[15px] text-slate-400 max-w-3xl leading-relaxed tracking-wide">
-          Oyun kütüphanelerinizi bağlayarak koleksiyonunuzu tek bir çatı altında toplayın. Girdiğiniz özel API anahtarları yalnızca bu cihazda yerel veritabanınızda güvende tutulur.
+    <div className="w-full h-full max-w-5xl mx-auto flex flex-col select-none">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-12"
+      >
+        <h2 className="text-2xl font-bold tracking-tight text-white mb-2">
+          Integrations
+        </h2>
+        <p className="text-sm text-slate-400 max-w-2xl leading-relaxed">
+          Connect your Steam and Epic Games accounts to manage your libraries in one place. All API keys are stored locally and never shared.
         </p>
-      </div>
+      </motion.div>
 
-      {/* Grid Layout: Premium Matrix */}
+      {/* Settings Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-        
-        {/* Steam Card */}
-        <section className="bg-[#0E1017]/90 border border-white/[0.05] rounded-2xl p-8 shadow-2xl shadow-black/50 flex flex-col">
-          <div className="flex items-center gap-5 mb-10">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06]">
-              <Monitor size={26} className="text-white" />
+        {/* Steam Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass rounded-lg p-8 flex flex-col"
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-indigo-500/15 border border-indigo-500/30">
+              <Monitor size={24} className="text-indigo-400" />
             </div>
             <div>
-              <h3 className="text-[19px] font-semibold text-white tracking-tight">Steam Ağı</h3>
-              <p className="text-[14px] text-slate-400 mt-1">Geliştirici anahtarı ile otomatik veri akışı</p>
+              <h3 className="text-base font-semibold text-white">Steam</h3>
+              <p className="text-xs text-slate-400 mt-1">Developer API integration</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 flex-1">
-            <InputField label="Steam API Anahtarı" type="password" value={steamApiKey} onChange={e => setSteamApiKey(e.target.value)} icon={Key} placeholder="XXXXXXXXXXXXXXXXXXXX" />
-            <InputField label="SteamID64 Profil Numarası" type="text" value={steamId} onChange={e => setSteamId(e.target.value)} icon={User} placeholder="76561198..." />
-            <InputField label="Yerel Kurulum Yolu" type="text" value={steamPath} onChange={e => setSteamPath(e.target.value)} icon={FolderOpen} placeholder="C:\Program Files (x86)\Steam" />
+          <div className="flex flex-col gap-5 flex-1">
+            <InputField
+              label="API Key"
+              type="password"
+              value={steamApiKey}
+              onChange={e => setSteamApiKey(e.target.value)}
+              icon={Key}
+              placeholder="Enter your Steam API key"
+            />
+            <InputField
+              label="Steam ID (64-bit)"
+              type="text"
+              value={steamId}
+              onChange={e => setSteamId(e.target.value)}
+              icon={User}
+              placeholder="e.g., 76561198..."
+            />
+            <InputField
+              label="Installation Path"
+              type="text"
+              value={steamPath}
+              onChange={e => setSteamPath(e.target.value)}
+              icon={FolderOpen}
+              placeholder="e.g., C:\Program Files (x86)\Steam"
+            />
           </div>
 
-          <div className="mt-10 pt-8 border-t border-white/[0.03] flex justify-end">
-            <ActionButton 
-              variant="secondary" icon={RefreshCw} 
-              onClick={() => syncSteam(steamApiKey, steamId, steamPath)} 
-              disabled={isSyncing || !steamApiKey || !steamId} 
+          <div className="mt-8 pt-6 border-t border-white/[0.06] flex justify-end">
+            <ActionButton
+              variant="secondary"
+              icon={RefreshCw}
+              onClick={() => syncSteam(steamApiKey, steamId, steamPath)}
+              disabled={isSyncing || !steamApiKey || !steamId}
               loading={isSyncing}
             >
-              {isSyncing ? syncMessage : 'Kütüphaneyi Yenile'}
+              {isSyncing ? syncMessage : 'Sync Library'}
             </ActionButton>
           </div>
-        </section>
+        </motion.section>
 
-        {/* Epic Card */}
-        <section className="bg-[#0E1017]/90 border border-white/[0.05] rounded-2xl p-8 shadow-2xl shadow-black/50 flex flex-col">
-          <div className="flex items-center gap-5 mb-10">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06]">
-              <Swords size={26} className="text-white" />
+        {/* Epic Games Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass rounded-lg p-8 flex flex-col"
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-violet-500/15 border border-violet-500/30">
+              <Swords size={24} className="text-violet-400" />
             </div>
             <div>
-              <h3 className="text-[19px] font-semibold text-white tracking-tight">Epic Games Store</h3>
-              <p className="text-[14px] text-slate-400 mt-1">Cihaz yetkilendirmesi ile güvenli bağlantı</p>
+              <h3 className="text-base font-semibold text-white">Epic Games</h3>
+              <p className="text-xs text-slate-400 mt-1">Secure OAuth authentication</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 flex-1">
-            <InputField label="Yerel Kurulum Yolu" type="text" value={epicPath} onChange={e => setEpicPath(e.target.value)} icon={FolderOpen} placeholder="C:\Program Files\Epic Games" />
-            
-            <div className="mt-2 p-5 rounded-xl bg-cyan-500/5 border border-cyan-500/10">
-              <div className="flex items-start gap-4">
-                <AlertCircle size={20} className="text-cyan-400 flex-shrink-0 mt-0.5" />
-                <p className="text-[14px] text-slate-300 leading-relaxed">
-                  Epic Games bağlantısı için doğrudan <b>OAuth</b> cihaz yetkilendirmesi kullanılır. Tıkladığınızda açılan resmi sayfadan Game Manager için erişim onayı verin.
+          <div className="flex flex-col gap-5 flex-1">
+            <InputField
+              label="Installation Path"
+              type="text"
+              value={epicPath}
+              onChange={e => setEpicPath(e.target.value)}
+              icon={FolderOpen}
+              placeholder="e.g., C:\Program Files\Epic Games"
+            />
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-2 p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
+            >
+              <div className="flex items-start gap-3">
+                <AlertCircle size={18} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  We use <b>OAuth Device Code Flow</b> for secure authentication. You'll be directed to Epic's official page to authorize access.
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="mt-10 pt-8 border-t border-white/[0.03] flex justify-end">
-            <ActionButton variant="secondary" icon={Wifi} onClick={() => syncEpic(epicPath)} disabled={isSyncing}>
-              Hesabı Yetkilendir
+          <div className="mt-8 pt-6 border-t border-white/[0.06] flex justify-end">
+            <ActionButton
+              variant="secondary"
+              icon={Wifi}
+              onClick={() => syncEpic(epicPath)}
+              disabled={isSyncing}
+              loading={isSyncing}
+            >
+              Authorize Account
             </ActionButton>
           </div>
-        </section>
-
+        </motion.section>
       </div>
 
-      {/* Global Save Action - The Anchor */}
-      <div className="flex justify-end mt-2 mb-12">
-        <ActionButton variant="primary" onClick={saveSettings} loading={isSaving} className="px-8 min-w-[200px] shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-          Değişiklikleri Kaydet
+      {/* Save Button */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="flex justify-end mt-2 mb-8"
+      >
+        <ActionButton
+          variant="accent"
+          onClick={saveSettings}
+          loading={isSaving}
+          className="px-8"
+        >
+          Save Changes
         </ActionButton>
-      </div>
-
+      </motion.div>
     </div>
   );
 }

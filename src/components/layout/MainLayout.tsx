@@ -18,42 +18,42 @@ export function MainLayout({ onLaunchGame }: MainLayoutProps) {
   const { activeNav, toasts, removeToast } = useGameStore();
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#050609] text-white">
-      {/* Global Toast Bildirim Sistemi Portal */}
-      <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none">
+    <div className="flex h-screen w-screen overflow-hidden bg-gradient-to-br from-white/[0.01] via-white/[0.005] to-white/[0.01] text-white">
+      {/* Global Toast Notification Portal */}
+      <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, y: -20, scale: 0.9, x: 20 }}
+              initial={{ opacity: 0, y: -20, scale: 0.9, x: 30 }}
               animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.9, x: 50, transition: { duration: 0.2 } }}
-              className={`bg-[#0D0F16]/90 p-4 rounded-xl border border-white/[0.05] flex items-center justify-between shadow-2xl shadow-black/50 pointer-events-auto backdrop-blur-xl ${
-                t.type === 'error' 
-                  ? 'border-l-[3px] border-l-rose-500' 
-                  : t.type === 'success' 
-                    ? 'border-l-[3px] border-l-emerald-500' 
-                    : 'border-l-[3px] border-l-amber-500'
+              exit={{ opacity: 0, scale: 0.9, x: 50, transition: { duration: 0.15 } }}
+              className={`glass p-4 rounded-lg flex items-center justify-between pointer-events-auto shadow-lg ${
+                t.type === 'error'
+                  ? 'border-l-2 border-l-red-500 bg-red-500/10'
+                  : t.type === 'success'
+                    ? 'border-l-2 border-l-green-500 bg-green-500/10'
+                    : 'border-l-2 border-l-indigo-500 bg-indigo-500/10'
               }`}
             >
-              <span className="text-[12px] font-semibold text-white tracking-wide pr-3">{t.message}</span>
+              <span className="text-sm font-medium text-white pr-3">{t.message}</span>
               <button
                 onClick={() => removeToast(t.id)}
                 className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none"
               >
-                <X size={14} />
+                <X size={16} />
               </button>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
 
-      {/* Sol: Premium Snappy Sidebar */}
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Sağ: Ana İçerik Alanı */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#050609]">
-        {/* İçerik alanı (Global Safe-Zone p-10/12 ile korunmaktadır) */}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Content Area */}
         <main className="flex-1 overflow-y-auto scrollbar-none relative px-10 pb-12">
           
           {/* Üst Araç Çubuğu - Sabit */}
