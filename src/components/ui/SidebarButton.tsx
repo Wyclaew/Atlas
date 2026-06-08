@@ -10,7 +10,6 @@ interface SidebarButtonProps {
   icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
   label: string;
   count?: number;
-  badge?: React.ReactNode;
 }
 
 export function SidebarButton({
@@ -18,8 +17,7 @@ export function SidebarButton({
   onClick,
   icon: Icon,
   label,
-  count,
-  badge
+  count
 }: SidebarButtonProps) {
   const { isSidebarOpen } = useGameStore();
 

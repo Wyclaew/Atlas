@@ -5,11 +5,12 @@ import { useRef, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useGameStore } from '../../stores/useGameStore';
 import { GameCard } from './GameCard';
+import { GameStatusBadge } from './GameStatusBadge';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { ActionButton } from '../ui/ActionButton';
 import { Gamepad2, Plus, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Game } from '../../types';
+import type { Game, GameStatus } from '../../types';
 
 interface GameGridProps {
   onLaunchGame: (game: Game) => void;
@@ -53,41 +54,37 @@ export function GameGrid({ onLaunchGame }: GameGridProps) {
     return <LoadingSpinner message="Kütüphane taranıyor..." size="lg" />;
   }
 
-  // Boş Durum (Empty State) Overhaul
+  // Empty State
   if (filteredGames.length === 0) {
     return (
-      <div className="relative flex flex-col items-center justify-center h-full w-full overflow-hidden bg-bg-primary py-20 px-6">
-        {/* Derinlik hissi veren merkezcil radial gradyan parıltı */}
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,_rgba(249,115,22,0.06)_0%,_transparent_70%)] pointer-events-none -z-10" />
-
+      <div className="relative flex flex-col items-center justify-center h-full w-full overflow-hidden py-24 px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center max-w-sm text-center"
         >
-          {/* Buzlu cam çember içinde placeholder ikon */}
-          <div
-            className="w-20 h-20 rounded-full flex items-center justify-center bg-bg-glass border border-border-medium mb-6 shadow-premium backdrop-blur-md"
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="w-20 h-20 rounded-xl flex items-center justify-center bg-indigo-500/10 border border-indigo-500/20 mb-6"
           >
-            <Gamepad2 size={32} className="text-text-secondary group-hover:text-orange-500 transition-colors duration-300" />
-          </div>
+            <Gamepad2 size={40} className="text-indigo-400" />
+          </motion.div>
 
-          <h3 className="text-lg font-black font-display text-text-bright tracking-tight mb-2 uppercase">
-            Kütüphane Bomboş
+          <h3 className="text-xl font-bold text-white mb-2">
+            No Games Yet
           </h3>
-          <p className="text-xs text-text-secondary font-medium leading-relaxed mb-8">
-            Steam veya Epic Games platformlarını bağlayarak kütüphanenizi anında senkronize edebilirsiniz.
+          <p className="text-sm text-slate-400 font-medium leading-relaxed mb-8">
+            Connect your Steam or Epic Games account to start building your library.
           </p>
 
-          {/* Glow Shadow'lu Action Button */}
           <ActionButton
-            variant="primary"
+            variant="accent"
             icon={Plus}
             onClick={() => useGameStore.getState().setActiveNav('settings')}
-            className="shadow-[0_0_20px_rgba(249,115,22,0.25)] hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]"
           >
-            PLATFORM BAĞLA
+            Connect Platform
           </ActionButton>
         </motion.div>
       </div>
@@ -151,7 +148,7 @@ export function GameGrid({ onLaunchGame }: GameGridProps) {
 }
 
 // =============================================
-// Liste Satırı Alt Bileşeni - Obsidian Edit
+// List Row Sub-Component
 // =============================================
 function ListRow({ game, onLaunch }: { game: Game; onLaunch: (g: Game) => void }) {
   const { setSelectedGame } = useGameStore();
@@ -159,49 +156,47 @@ function ListRow({ game, onLaunch }: { game: Game; onLaunch: (g: Game) => void }
 
   return (
     <motion.div
-      whileHover={{ scale: 1.005, backgroundColor: 'var(--color-bg-hover)' }}
-      className="flex items-center gap-4 px-5 py-3 rounded-xl cursor-pointer bg-bg-secondary border border-border-subtle hover:border-border-medium transition-all duration-300 shadow-sm"
+      whileHover={{ scale: 1.01 }}
+      className="flex items-center gap-4 px-4 py-3 rounded-lg cursor-pointer bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all duration-200"
       onClick={() => setSelectedGame(game)}
     >
-      {/* Mini kapak */}
+      {/* Mini Cover */}
       <img
         src={game.cover_image_url ?? ''}
         alt={game.title}
-        className="w-10 h-14 object-cover rounded-lg bg-[rgba(9,10,15,0.6)] shadow-inner"
+        className="w-10 h-14 object-cover rounded-md bg-white/[0.04]"
         onError={(e) => {
-          (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="56"><rect width="40" height="56" fill="%2314161c"/></svg>';
+          (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="56"><rect width="40" height="56" fill="%23222222"/></svg>';
         }}
       />
-      {/* Oyun bilgisi */}
+      {/* Game Info */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-xs font-bold text-text-bright truncate tracking-wide">
+        <h4 className="text-sm font-semibold text-white truncate">
           {game.title}
         </h4>
-        <p className="text-[10px] text-text-secondary font-semibold mt-1 flex items-center gap-1.5">
+        <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
           <span>{game.platform_name}</span>
-          <span className="w-1 h-1 rounded-full bg-text-muted" />
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
           {game.total_playtime_minutes > 0 ? (
             <span className="flex items-center gap-1">
               <Clock size={10} />
-              {Math.round(game.total_playtime_minutes / 60)} saat
+              {Math.round(game.total_playtime_minutes / 60)}h
             </span>
           ) : (
-            <span>Süre Yok</span>
+            <span>No playtime</span>
           )}
         </p>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded bg-bg-hover border border-border-subtle text-text-secondary">
-          {game.status}
-        </span>
-        
+        <GameStatusBadge status={game.status as GameStatus} size="sm" />
+
         {isInstalled && (
           <ActionButton
-            variant="primary"
-            className="text-[10px] py-1.5 px-3.5"
+            variant="secondary"
+            className="text-xs py-1.5 px-3"
             onClick={(e) => { e.stopPropagation(); onLaunch(game); }}
           >
-            Oyna
+            Play
           </ActionButton>
         )}
       </div>
