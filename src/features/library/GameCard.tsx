@@ -1,14 +1,15 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import { memo, useMemo, useState, type CSSProperties } from 'react';
 import { motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { Heart, Trophy } from 'lucide-react';
 import { CoverImage } from '../../components/ui/CoverImage';
 import { PlatformBadge, StatusBadge } from '../../components/ui/Badges';
 import { useStore } from '../../store/useStore';
 import { coverCandidates } from '../../lib/steamArt';
 import { formatPlaytime } from '../../lib/format';
+import { playSfx } from '../../lib/sfx';
 import type { Game } from '../../types';
 
-export function GameCard({ game }: { game: Game }) {
+function GameCardImpl({ game }: { game: Game }) {
   const openGame = useStore((s) => s.openGame);
   const toggleFavorite = useStore((s) => s.toggleFavorite);
   const setAccent = useStore((s) => s.setAccent);
@@ -26,8 +27,11 @@ export function GameCard({ game }: { game: Game }) {
       className="group relative h-full w-full"
     >
       <button
-        onClick={() => openGame(game.id)}
-        className="ring-game relative block h-full w-full overflow-hidden rounded-xl bg-surface-2 text-left"
+        onClick={() => {
+          playSfx('tap');
+          openGame(game.id);
+        }}
+        className="ring-game relative block h-full w-full cursor-pointer overflow-hidden rounded-xl bg-surface-2 text-left"
       >
         <CoverImage
           candidates={covers}
@@ -66,11 +70,12 @@ export function GameCard({ game }: { game: Game }) {
         {/* bottom info */}
         <div className="absolute inset-x-0 bottom-0 translate-y-1 p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           <p className="line-clamp-2 text-[13px] font-semibold leading-tight text-white">{game.title}</p>
-          <div className="mt-1.5 flex items-center gap-2 text-[11px] font-medium text-white/70">
+          <div className="mt-1.5 flex items-center gap-2.5 text-[11px] font-medium text-white/70">
             {game.playtime_minutes > 0 && <span className="tabular-nums">{formatPlaytime(game.playtime_minutes)}</span>}
             {hasAch && (
-              <span className="tabular-nums" style={{ color: 'var(--color-gold)' }}>
-                {game.achievements_unlocked}/{game.achievements_total} 🏆
+              <span className="flex items-center gap-1 tabular-nums" style={{ color: 'var(--color-gold)' }}>
+                <Trophy size={11} strokeWidth={2.4} />
+                {game.achievements_unlocked}/{game.achievements_total}
               </span>
             )}
           </div>
@@ -86,3 +91,5 @@ export function GameCard({ game }: { game: Game }) {
     </motion.div>
   );
 }
+
+export const GameCard = memo(GameCardImpl);

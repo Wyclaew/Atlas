@@ -43,6 +43,7 @@ export function CoverImage({ candidates, alt, className = '', onAccent, rounded 
         src={src}
         alt={alt}
         loading="lazy"
+        decoding="async"
         draggable={false}
         className={`h-full w-full object-cover transition-opacity duration-500 ${
           status === 'loaded' ? 'opacity-100' : 'opacity-0'

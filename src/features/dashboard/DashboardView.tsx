@@ -7,6 +7,7 @@ import { formatNumber } from '../../lib/format';
 import { coverCandidates } from '../../lib/steamArt';
 import { CoverImage } from '../../components/ui/CoverImage';
 import { Button } from '../../components/ui/Button';
+import { useT } from '../../i18n';
 import { Hero } from './Hero';
 import type { Game } from '../../types';
 
@@ -64,6 +65,7 @@ function Rail({ title, games }: { title: string; games: Game[] }) {
 export function DashboardView() {
   const games = useStore((s) => s.games);
   const setNav = useStore((s) => s.setNav);
+  const t = useT();
   const stats = useMemo(() => computeStats(games), [games]);
 
   const played = useMemo(
@@ -86,13 +88,10 @@ export function DashboardView() {
           <div className="mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-accent text-black shadow-[0_0_40px_-6px_var(--color-accent)]">
             <Boxes size={28} strokeWidth={2.2} />
           </div>
-          <h2 className="font-display text-2xl font-bold tracking-tight text-text">Welcome to Atlas</h2>
-          <p className="mt-2 text-sm leading-relaxed text-dim">
-            One home for every store. Connect Steam to pull in your games, playtime and achievements — more
-            platforms are on the way.
-          </p>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-text">{t('dash.welcomeTitle')}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-dim">{t('dash.welcomeBody')}</p>
           <Button variant="primary" icon={Plug} className="mt-6" onClick={() => setNav('accounts')}>
-            Connect a platform
+            {t('lib.connect')}
           </Button>
         </motion.div>
       </div>
@@ -106,14 +105,14 @@ export function DashboardView() {
       <Hero game={hero} played={!!played[0]} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatTile icon={Boxes} label="Games" value={formatNumber(stats.total)} tint="var(--color-accent)" delay={0.05} />
-        <StatTile icon={Clock} label="Hours played" value={formatNumber(stats.totalHours)} tint="var(--color-st-playing)" delay={0.1} />
-        <StatTile icon={Trophy} label="Achievements" value={formatNumber(stats.achievementsUnlocked)} tint="var(--color-gold)" delay={0.15} />
-        <StatTile icon={HardDriveDownload} label="Installed" value={formatNumber(stats.installed)} tint="var(--color-st-wishlist)" delay={0.2} />
+        <StatTile icon={Boxes} label={t('dash.statGames')} value={formatNumber(stats.total)} tint="var(--color-accent)" delay={0.05} />
+        <StatTile icon={Clock} label={t('dash.statHours')} value={formatNumber(stats.totalHours)} tint="var(--color-st-playing)" delay={0.1} />
+        <StatTile icon={Trophy} label={t('dash.statAchievements')} value={formatNumber(stats.achievementsUnlocked)} tint="var(--color-gold)" delay={0.15} />
+        <StatTile icon={HardDriveDownload} label={t('dash.statInstalled')} value={formatNumber(stats.installed)} tint="var(--color-st-wishlist)" delay={0.2} />
       </div>
 
-      <Rail title="Jump back in" games={played.slice(0, 12)} />
-      <Rail title="Most played" games={topPlayed} />
+      <Rail title={t('dash.jumpBackIn')} games={played.slice(0, 12)} />
+      <Rail title={t('dash.mostPlayed')} games={topPlayed} />
     </div>
   );
 }

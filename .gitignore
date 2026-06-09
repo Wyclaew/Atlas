@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent files
+.claude/
+.gemini/
+
+# Rust/Tauri build artifacts (as fallback)
+/src-tauri/target/
+/src-tauri/gen/schemas/

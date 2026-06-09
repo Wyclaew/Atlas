@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Clock,
   Download,
+  Eye,
   ExternalLink,
   EyeOff,
   Heart,
@@ -20,6 +21,7 @@ import { Button } from '../../components/ui/Button';
 import { AchievementList } from './AchievementList';
 import { heroCandidates } from '../../lib/steamArt';
 import { formatPlaytime, relativeTime } from '../../lib/format';
+import { useT } from '../../i18n';
 import { STATUS_META, STATUS_ORDER } from '../../lib/meta';
 import type { Game } from '../../types';
 
@@ -99,9 +101,11 @@ export function GameDetail() {
   const ensureAchievements = useStore((s) => s.ensureAchievements);
   const toggleFavorite = useStore((s) => s.toggleFavorite);
   const hideGame = useStore((s) => s.hideGame);
+  const unhideGame = useStore((s) => s.unhideGame);
   const launch = useStore((s) => s.launch);
   const install = useStore((s) => s.install);
   const openStore = useStore((s) => s.openStore);
+  const t = useT();
 
   const [accent, setAccent] = useState('var(--color-accent)');
   const heroes = useMemo(() => (game ? heroCandidates(game) : []), [game?.platform_key, game?.external_id]);
@@ -120,8 +124,6 @@ export function GameDetail() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [detailOpen, closeDetail]);
-
-  const isSteam = game?.platform_key === 'steam';
 
   return (
     <AnimatePresence>
@@ -164,21 +166,22 @@ export function GameDetail() {
             {/* Body */}
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
               <div className="flex flex-wrap items-center gap-2.5">
-                <Button variant="game" icon={Play} onClick={() => void launch(game)}>
-                  Play
-                </Button>
-                {isSteam && (
-                  <Button variant="soft" icon={Download} onClick={() => void install(game)}>
-                    Install
+                {game.is_installed ? (
+                  <Button variant="game" icon={Play} onClick={() => void launch(game)}>
+                    {t('common.play')}
+                  </Button>
+                ) : (
+                  <Button variant="game" icon={Download} onClick={() => void install(game)}>
+                    {t('common.install')}
                   </Button>
                 )}
                 <Button variant="ghost" icon={ExternalLink} onClick={() => void openStore(game)}>
-                  Store
+                  {t('common.store')}
                 </Button>
                 <div className="ml-auto flex items-center gap-1.5">
                   <button
                     onClick={() => void toggleFavorite(game.id)}
-                    className={`grid h-11 w-11 place-items-center rounded-xl border border-line transition-colors ${
+                    className={`grid h-11 w-11 cursor-pointer place-items-center rounded-xl border border-line transition-colors ${
                       game.is_favorite ? 'text-rose-400' : 'text-faint hover:text-text'
                     }`}
                     aria-label="Favorite"
@@ -186,11 +189,11 @@ export function GameDetail() {
                     <Heart size={17} fill={game.is_favorite ? 'currentColor' : 'none'} />
                   </button>
                   <button
-                    onClick={() => void hideGame(game.id)}
-                    className="grid h-11 w-11 place-items-center rounded-xl border border-line text-faint transition-colors hover:text-text"
-                    aria-label="Hide"
+                    onClick={() => void (game.is_hidden ? unhideGame(game.id) : hideGame(game.id))}
+                    className="grid h-11 w-11 cursor-pointer place-items-center rounded-xl border border-line text-faint transition-colors hover:text-text"
+                    aria-label={game.is_hidden ? 'Unhide' : 'Hide'}
                   >
-                    <EyeOff size={17} />
+                    {game.is_hidden ? <Eye size={17} /> : <EyeOff size={17} />}
                   </button>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { PlatformBadge, StatusBadge } from '../../components/ui/Badges';
 import { useStore } from '../../store/useStore';
 import { coverCandidates } from '../../lib/steamArt';
 import { formatPlaytime, relativeTime } from '../../lib/format';
+import { playSfx } from '../../lib/sfx';
 import type { Game } from '../../types';
 
 export function GameListRow({ game }: { game: Game }) {
@@ -14,8 +15,11 @@ export function GameListRow({ game }: { game: Game }) {
 
   return (
     <button
-      onClick={() => openGame(game.id)}
-      className="group flex w-full items-center gap-4 rounded-xl border border-line bg-surface px-3 py-2.5 text-left transition-colors hover:border-line-strong hover:bg-surface-2"
+      onClick={() => {
+        playSfx('tap');
+        openGame(game.id);
+      }}
+      className="group flex w-full cursor-pointer items-center gap-4 rounded-xl border border-line bg-surface px-3 py-2.5 text-left transition-colors hover:border-line-strong hover:bg-surface-2"
     >
       <CoverImage candidates={covers} alt={game.title} className="h-14 w-10 shrink-0" rounded="rounded-md" />
 

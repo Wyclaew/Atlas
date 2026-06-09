@@ -11,7 +11,9 @@
 // commands in `commands/`. Launch/install/store URIs are dispatched by
 // `platform_key` in `launch_uri` below so the frontend stays platform-agnostic.
 
+pub mod itad;
 pub mod steam;
+pub mod steamstore;
 
 /// Build the shared HTTP client used by every connector.
 pub fn http_client() -> reqwest::Client {

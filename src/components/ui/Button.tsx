@@ -1,5 +1,6 @@
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import type { ComponentType, ReactNode } from 'react';
+import { playSfx, type SfxName } from '../../lib/sfx';
 
 type Variant = 'primary' | 'game' | 'soft' | 'ghost' | 'outline' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -11,12 +12,14 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   iconRight?: ComponentType<{ size?: number; strokeWidth?: number }>;
   loading?: boolean;
   children?: ReactNode;
+  /** Sound on click. Defaults to a soft tap; pass false to silence. */
+  sound?: SfxName | false;
 }
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-text text-bg hover:bg-white',
-  game: 'bg-[var(--g)] text-black hover:brightness-110 font-semibold',
-  soft: 'bg-white/[0.06] text-text border border-line hover:bg-white/[0.10]',
+  primary: 'bg-text text-bg hover:bg-white shadow-[0_8px_24px_-12px_rgba(255,255,255,0.4)]',
+  game: 'text-black font-semibold bg-[var(--g)] hover:brightness-110 shadow-[0_10px_30px_-12px_var(--g)]',
+  soft: 'bg-white/[0.055] text-text border border-line hover:bg-white/[0.1] hover:border-line-strong',
   ghost: 'text-dim hover:text-text hover:bg-white/[0.05]',
   outline: 'border border-line-strong text-text hover:bg-white/[0.05]',
   danger: 'text-rose-300 border border-line hover:bg-rose-500/10 hover:border-rose-500/30',
@@ -39,6 +42,8 @@ export function Button({
   disabled,
   children,
   className = '',
+  sound = 'tap',
+  onClick,
   ...props
 }: ButtonProps) {
   return (
@@ -46,14 +51,18 @@ export function Button({
       whileTap={{ scale: 0.97 }}
       transition={{ duration: 0.12 }}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center font-medium tracking-tight select-none cursor-pointer
-        transition-[background,color,box-shadow,filter] duration-200 outline-none whitespace-nowrap
+      onClick={(e) => {
+        if (sound) playSfx(sound);
+        onClick?.(e);
+      }}
+      className={`inline-flex cursor-pointer items-center justify-center font-medium tracking-tight select-none
+        transition-[background,color,box-shadow,filter,border-color] duration-200 outline-none whitespace-nowrap
         disabled:opacity-50 disabled:pointer-events-none ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
       {...props}
     >
       {loading ? (
         <span
-          className="inline-block rounded-full border-2 border-current/30 border-t-current animate-spin"
+          className="inline-block animate-spin rounded-full border-2 border-current/30 border-t-current"
           style={{ width: ICON[size], height: ICON[size] }}
         />
       ) : (

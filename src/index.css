@@ -1,50 +1,52 @@
 /* =============================================================
-   Atlas — Design System
-   Warm near-black canvas · editorial type · lime signature accent ·
-   per-game color driven by cover art. Deliberately not the stock
-   blue/purple "AI dashboard" look.
+   Atlas — Design System v2  ·  "Cinematic Gamer"
+   Deep OLED-dark canvas · amber/gold signature · per-game cover
+   color drives cinematic surfaces. High contrast, visible focus,
+   subtle motion. Not the stock blue/purple AI dashboard.
    ============================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* Surfaces — warm near-black, layered */
-  --color-bg:         #0a0a0c;
-  --color-surface:    #121217;
-  --color-surface-2:  #16161c;
-  --color-elevated:   #1d1d25;
+  /* Surfaces — deep, warm-neutral, layered */
+  --color-bg:         #08080a;
+  --color-surface:    #101013;
+  --color-surface-2:  #16161a;
+  --color-elevated:   #1e1e24;
+  --color-overlay:    #0c0c0f;
 
   /* Lines */
   --color-line:        rgba(255, 255, 255, 0.07);
   --color-line-strong: rgba(255, 255, 255, 0.13);
 
-  /* Text */
-  --color-text:  #f1f1f4;
-  --color-dim:   #9a9aa6;
-  --color-faint: #62626d;
+  /* Text ramp */
+  --color-text:  #f5f5f7;
+  --color-dim:   #9d9da8;
+  --color-faint: #66666f;
 
-  /* Signature accent (used sparingly) + trophy gold */
-  --color-accent: #c8ff4d;
-  --color-gold:   #f5b942;
+  /* Signature accent (amber/gold) + trophy gold */
+  --color-accent:        #ffb23e;
+  --color-accent-strong: #ff9e22;
+  --color-gold:          #ffd166;
 
-  /* Status hues — warm + distinctive, not neon-stock */
-  --color-st-library:   #a1a1aa;
-  --color-st-playing:   #7cfca0;
-  --color-st-completed: #ffc857;
-  --color-st-wishlist:  #ff90b3;
+  /* Status hues — distinctive, gamer, not stock */
+  --color-st-library:   #9d9da8;
+  --color-st-playing:   #5fe39a;
+  --color-st-completed: #ffd166;
+  --color-st-wishlist:  #ff86b0;
   --color-st-dropped:   #7c7c86;
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
-/* ---- Base ---- */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+/* ---- Base ----
+   NB: don't add an unlayered `* { padding: 0 }` reset — it overrides Tailwind's
+   (layered) padding utilities everywhere. Preflight already handles resets. */
 html, body, #root { height: 100%; }
 
 body {
@@ -55,56 +57,110 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  letter-spacing: -0.01em;
 }
 
-/* Each game-context surface sets --g (its cover color). Falls back to accent. */
+/* Each game-context surface sets --g (its cover color); default = accent. */
 :root { --g: var(--color-accent); }
 
-h1, h2, h3, h4, .font-display { font-family: var(--font-display); }
+h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
 
-::selection { background: color-mix(in srgb, var(--color-accent) 35%, transparent); }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); color: #fff; }
+
+/* Visible keyboard focus everywhere (mouse clicks don't trigger it) */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  border-radius: 10px;
+}
 
 /* ---- Scrollbars ---- */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.09);
   border-radius: 99px;
   border: 3px solid transparent;
   background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); background-clip: content-box; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
-/* ---- Reusable surface treatments ---- */
+/* ---- Surfaces & elevation ---- */
 .card-surface {
-  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0)) ,
+    var(--color-surface);
   border: 1px solid var(--color-line);
 }
+.elev-1 { box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px -16px rgba(0,0,0,0.9); }
+.elev-2 { box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 24px 60px -24px rgba(0,0,0,0.95); }
 
 .glass {
-  background: rgba(16, 16, 20, 0.72);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  background: color-mix(in srgb, var(--color-overlay) 78%, transparent);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
   border: 1px solid var(--color-line);
 }
 
-/* Subtle dotted texture for empty/hero areas */
-.dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
+/* Gradient hairline that picks up the game color on hover/focus */
+.ring-game { box-shadow: 0 0 0 1px var(--color-line); transition: box-shadow .3s var(--ease-out-expo), transform .3s var(--ease-out-expo); }
+.ring-game:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--g) 60%, transparent),
+    0 22px 60px -22px color-mix(in srgb, var(--g) 55%, transparent);
 }
 
-/* Gradient hairline border that picks up the game color on hover/focus */
-.ring-game { box-shadow: 0 0 0 1px var(--color-line); transition: box-shadow .25s var(--ease-out-expo); }
-.ring-game:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--g) 55%, transparent), 0 18px 50px -20px color-mix(in srgb, var(--g) 50%, transparent); }
+/* Per-game glow blob */
+.glow-g { background: radial-gradient(circle at center, color-mix(in srgb, var(--g) 55%, transparent), transparent 70%); }
+
+/* ---- Backgrounds: subtle aurora + grid + noise (cheap, GPU-friendly) ---- */
+.app-aurora {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.app-aurora::before, .app-aurora::after {
+  content: ""; position: absolute; width: 44vw; height: 44vw; border-radius: 50%;
+  filter: blur(85px); opacity: 0.13; will-change: transform; transform: translateZ(0);
+}
+.app-aurora::before {
+  top: -16%; left: -8%;
+  background: radial-gradient(circle, var(--color-accent), transparent 60%);
+  animation: drift1 30s var(--ease-out-expo) infinite alternate;
+}
+.app-aurora::after {
+  bottom: -20%; right: -8%;
+  background: radial-gradient(circle, #4f7cff, transparent 60%);
+  opacity: 0.08;
+  animation: drift2 36s var(--ease-out-expo) infinite alternate;
+}
+
+/* Off-screen rendering skip for long lists */
+.cv-auto { content-visibility: auto; contain-intrinsic-size: 320px; }
+
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+/* Fine film grain to kill banding on dark gradients */
+.noise::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
 /* ---- Keyframes ---- */
-@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes drift1 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(8vw, 6vh, 0) scale(1.15); } }
+@keyframes drift2 { from { transform: translate3d(0,0,0) scale(1.1); } to { transform: translate3d(-7vw, -5vh, 0) scale(1); } }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes shimmer { 100% { transform: translateX(100%); } }
-@keyframes breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes pulse-soft { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 
 .animate-rise { animation: rise .5s var(--ease-out-expo) both; }
 .animate-fade { animation: fade .4s ease both; }
@@ -113,8 +169,8 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); }
 .skeleton { position: relative; overflow: hidden; background: var(--color-surface-2); }
 .skeleton::after {
   content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-  animation: shimmer 1.4s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.055), transparent);
+  animation: shimmer 1.5s infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

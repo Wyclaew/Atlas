@@ -7,7 +7,10 @@ import { TopBar } from '../components/layout/TopBar';
 import { DashboardView } from '../features/dashboard/DashboardView';
 import { LibraryView } from '../features/library/LibraryView';
 import { AccountsView } from '../features/accounts/AccountsView';
+import { StoreView } from '../features/store/StoreView';
+import { WishlistView } from '../features/wishlist/WishlistView';
 import { GameDetail } from '../features/detail/GameDetail';
+import { CommandPalette } from '../components/CommandPalette';
 import { Toasts } from '../components/ui/Toasts';
 
 export function App() {
@@ -20,10 +23,13 @@ export function App() {
   }, [init]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-bg text-text">
+    <div className="relative flex h-screen w-screen overflow-hidden bg-bg text-text">
+      {/* ambient animated backdrop */}
+      <div className="app-aurora" aria-hidden />
+
       <Sidebar />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <TopBar />
         <main className="relative flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
@@ -39,6 +45,10 @@ export function App() {
                 <DashboardView />
               ) : view === 'accounts' ? (
                 <AccountsView />
+              ) : view === 'store' ? (
+                <StoreView />
+              ) : view === 'wishlist' ? (
+                <WishlistView />
               ) : (
                 <LibraryView />
               )}
@@ -48,6 +58,7 @@ export function App() {
       </div>
 
       <GameDetail />
+      <CommandPalette />
       <Toasts />
     </div>
   );

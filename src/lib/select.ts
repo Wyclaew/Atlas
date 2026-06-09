@@ -6,6 +6,8 @@ import type { Game, GameStatus, LibraryStats, NavId, SortField } from '../types'
 const PLATFORM_NAVS = new Set<NavId>(['steam', 'epic', 'gog', 'xbox']);
 
 export function matchesNav(game: Game, nav: NavId): boolean {
+  if (nav === 'hidden') return !!game.is_hidden;
+  if (game.is_hidden) return false; // hidden games are excluded everywhere else
   switch (nav) {
     case 'all':
     case 'dashboard':
@@ -16,8 +18,6 @@ export function matchesNav(game: Game, nav: NavId): boolean {
       return game.status === 'Playing';
     case 'completed':
       return game.status === 'Completed';
-    case 'wishlist':
-      return game.status === 'Wishlist';
     default:
       if (PLATFORM_NAVS.has(nav)) return game.platform_key === nav;
       return true;
@@ -59,7 +59,6 @@ const EMPTY_STATUS: Record<GameStatus, number> = {
   Library: 0,
   Playing: 0,
   Completed: 0,
-  Wishlist: 0,
   Dropped: 0,
 };
 
@@ -70,7 +69,10 @@ export function computeStats(games: Game[]): LibraryStats {
   let totalMinutes = 0;
   let achievementsUnlocked = 0;
 
+  let total = 0;
   for (const g of games) {
+    if (g.is_hidden) continue;
+    total += 1;
     byStatus[g.status] = (byStatus[g.status] ?? 0) + 1;
     byPlatform[g.platform_key] = (byPlatform[g.platform_key] ?? 0) + 1;
     if (g.is_installed) installed += 1;
@@ -79,7 +81,7 @@ export function computeStats(games: Game[]): LibraryStats {
   }
 
   return {
-    total: games.length,
+    total,
     installed,
     totalHours: Math.round(totalMinutes / 60),
     achievementsUnlocked,
@@ -89,5 +91,9 @@ export function computeStats(games: Game[]): LibraryStats {
 }
 
 export function favoriteCount(games: Game[]): number {
-  return games.reduce((n, g) => n + (g.is_favorite ? 1 : 0), 0);
+  return games.reduce((n, g) => n + (!g.is_hidden && g.is_favorite ? 1 : 0), 0);
+}
+
+export function hiddenCount(games: Game[]): number {
+  return games.reduce((n, g) => n + (g.is_hidden ? 1 : 0), 0);
 }

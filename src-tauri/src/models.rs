@@ -56,3 +56,71 @@ pub struct PlatformPaths {
     pub epic_path: Option<String>,
     pub gog_path: Option<String>,
 }
+
+/// A locally installed game discovered by scanning a launcher's library.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InstalledGame {
+    pub external_id: String,
+    pub install_dir: String,
+}
+
+/// A storefront listing (search result / featured / deal). Prices in cents.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StoreListing {
+    pub external_id: String,
+    pub title: String,
+    pub cover_url: Option<String>,
+    pub header_url: Option<String>,
+    pub final_cents: Option<i64>,
+    pub initial_cents: Option<i64>,
+    pub discount_pct: Option<i64>,
+    pub currency: Option<String>,
+    pub is_free: bool,
+}
+
+/// Featured store categories.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct FeaturedStore {
+    pub specials: Vec<StoreListing>,
+    pub new_releases: Vec<StoreListing>,
+    pub top_sellers: Vec<StoreListing>,
+}
+
+/// Full store app details (Steam appdetails).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StoreApp {
+    pub external_id: String,
+    pub title: String,
+    pub description: Option<String>,
+    pub header_url: Option<String>,
+    pub cover_url: Option<String>,
+    pub screenshots: Vec<String>,
+    pub final_cents: Option<i64>,
+    pub initial_cents: Option<i64>,
+    pub discount_pct: Option<i64>,
+    pub currency: Option<String>,
+    pub is_free: bool,
+    pub release_date: Option<String>,
+    pub developers: Vec<String>,
+    pub genres: Vec<String>,
+}
+
+/// One shop's current price for a game (from ITAD). Prices in cents.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PriceQuote {
+    pub shop: String,
+    pub price_cents: i64,
+    pub regular_cents: i64,
+    pub cut: i64,
+    pub currency: String,
+    pub url: String,
+}
+
+/// Cross-platform price comparison for one game (from ITAD).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PriceComparison {
+    pub itad_id: Option<String>,
+    pub deals: Vec<PriceQuote>,
+    pub lowest_cents: Option<i64>,
+    pub lowest_currency: Option<String>,
+}

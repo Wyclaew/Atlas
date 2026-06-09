@@ -44,3 +44,14 @@ export function formatPercent(p: number | null | undefined): string {
   if (p < 1) return `${p.toFixed(1)}%`;
   return `${Math.round(p)}%`;
 }
+
+/** Cents + ISO currency → localized currency string, e.g. "₺499,00" / "$19.99". */
+export function formatPrice(cents: number | null | undefined, currency: string | null | undefined): string {
+  if (cents == null) return '';
+  const cur = (currency || 'USD').toUpperCase();
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }).format(cents / 100);
+  } catch {
+    return `${(cents / 100).toFixed(2)} ${cur}`;
+  }
+}

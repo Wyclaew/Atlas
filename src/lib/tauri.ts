@@ -3,7 +3,17 @@
 
 import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
-import type { AccountInfo, AchievementSet, NormalizedGame, PlatformPaths } from '../types';
+import type {
+  AccountInfo,
+  AchievementSet,
+  FeaturedStore,
+  InstalledGame,
+  NormalizedGame,
+  PlatformPaths,
+  PriceComparison,
+  StoreApp,
+  StoreListing,
+} from '../types';
 
 /** Open a URL in the user's default browser (not the webview). */
 export function openExternal(url: string): Promise<void> {
@@ -30,6 +40,20 @@ export const api = {
     invoke<void>('open_store_page', { platformKey, externalId }),
 
   detectPlatformPaths: () => invoke<PlatformPaths>('detect_platform_paths'),
+
+  scanSteamInstalls: (steamPath: string) =>
+    invoke<InstalledGame[]>('scan_steam_installs', { steamPath }),
+
+  storeFeatured: (cc: string) => invoke<FeaturedStore>('store_featured', { cc }),
+
+  storeSearch: (term: string, cc: string) =>
+    invoke<StoreListing[]>('store_search', { term, cc }),
+
+  storeAppDetails: (appid: string, cc: string) =>
+    invoke<StoreApp>('store_app_details', { appid, cc }),
+
+  itadPrices: (key: string, appid: string, country: string) =>
+    invoke<PriceComparison>('itad_prices', { key, appid, country }),
 };
 
 export function errorMessage(e: unknown): string {

@@ -1,44 +1,36 @@
 import type { AppView, NavId } from '../types';
-import { PLATFORM_META } from './meta';
+import type { TKey } from '../i18n/locales';
 
 export function navToView(nav: NavId): AppView {
   if (nav === 'dashboard') return 'dashboard';
   if (nav === 'accounts') return 'accounts';
+  if (nav === 'store') return 'store';
+  if (nav === 'wishlist') return 'wishlist';
   return 'library';
 }
 
-export function navTitle(nav: NavId): string {
+/** Translation key for a nav title (platform navs are resolved separately). */
+export function navTitleKey(nav: NavId): TKey {
   switch (nav) {
     case 'dashboard':
-      return 'Dashboard';
+      return 'nav.dashboard';
     case 'all':
-      return 'All Games';
+      return 'nav.allGames';
     case 'favorites':
-      return 'Favorites';
+      return 'nav.favorites';
     case 'playing':
-      return 'Playing';
+      return 'nav.playing';
     case 'completed':
-      return 'Completed';
+      return 'nav.completed';
+    case 'hidden':
+      return 'nav.hidden';
+    case 'store':
+      return 'nav.store';
     case 'wishlist':
-      return 'Wishlist';
+      return 'nav.wishlist';
     case 'accounts':
-      return 'Accounts & Settings';
+      return 'nav.settings';
     default:
-      return PLATFORM_META[nav]?.name ?? 'Library';
-  }
-}
-
-export function navSubtitle(nav: NavId): string {
-  switch (nav) {
-    case 'favorites':
-      return 'Games you starred';
-    case 'playing':
-      return 'Currently in rotation';
-    case 'completed':
-      return 'Finished and put down';
-    case 'wishlist':
-      return 'On your radar';
-    default:
-      return 'Everything in one place';
+      return 'nav.allGames';
   }
 }

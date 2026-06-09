@@ -1,17 +1,20 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import { motion } from 'framer-motion';
-import { Info, Play, Sparkles } from 'lucide-react';
+import { Download, Info, Play, Sparkles } from 'lucide-react';
 import { CoverImage } from '../../components/ui/CoverImage';
 import { PlatformBadge } from '../../components/ui/Badges';
 import { Button } from '../../components/ui/Button';
 import { useStore } from '../../store/useStore';
 import { heroCandidates } from '../../lib/steamArt';
 import { formatPlaytime, relativeTime } from '../../lib/format';
+import { useT } from '../../i18n';
 import type { Game } from '../../types';
 
 export function Hero({ game, played }: { game: Game; played: boolean }) {
   const launch = useStore((s) => s.launch);
+  const install = useStore((s) => s.install);
   const openGame = useStore((s) => s.openGame);
+  const t = useT();
   const [accent, setAccent] = useState(game.accent_color ?? 'var(--color-accent)');
   const heroes = useMemo(() => heroCandidates(game), [game.platform_key, game.external_id]);
 
@@ -40,7 +43,7 @@ export function Hero({ game, played }: { game: Game; played: boolean }) {
       <div className="relative flex min-h-[340px] flex-col justify-end gap-5 p-8">
         <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--g)' }}>
           <Sparkles size={14} />
-          {played ? 'Jump back in' : 'From your library'}
+          {played ? t('dash.jumpBackIn') : t('dash.fromLibrary')}
         </div>
 
         <div>
@@ -49,17 +52,17 @@ export function Hero({ game, played }: { game: Game; played: boolean }) {
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/75">
             <PlatformBadge platform={game.platform_key} />
-            {game.playtime_minutes > 0 && (
-              <span className="tabular-nums">{formatPlaytime(game.playtime_minutes)} played</span>
-            )}
-            <span>Last played {relativeTime(game.last_played_at)}</span>
+            {game.playtime_minutes > 0 && <span className="tabular-nums">{formatPlaytime(game.playtime_minutes)}</span>}
+            <span>
+              {t('detail.lastPlayed')} {relativeTime(game.last_played_at)}
+            </span>
           </div>
         </div>
 
         {game.achievements_total > 0 && (
           <div className="max-w-md">
             <div className="mb-1.5 flex items-center justify-between text-[12px] font-medium text-white/70">
-              <span>Achievements</span>
+              <span>{t('detail.achievements')}</span>
               <span className="tabular-nums" style={{ color: 'var(--color-gold)' }}>
                 {game.achievements_unlocked}/{game.achievements_total}
               </span>
@@ -71,11 +74,17 @@ export function Hero({ game, played }: { game: Game; played: boolean }) {
         )}
 
         <div className="mt-1 flex items-center gap-3">
-          <Button variant="game" size="lg" icon={Play} onClick={() => void launch(game)}>
-            Play
-          </Button>
+          {game.is_installed ? (
+            <Button variant="game" size="lg" icon={Play} onClick={() => void launch(game)}>
+              {t('common.play')}
+            </Button>
+          ) : (
+            <Button variant="game" size="lg" icon={Download} onClick={() => void install(game)}>
+              {t('common.install')}
+            </Button>
+          )}
           <Button variant="soft" size="lg" icon={Info} onClick={() => openGame(game.id)}>
-            Details
+            {t('common.details')}
           </Button>
         </div>
       </div>

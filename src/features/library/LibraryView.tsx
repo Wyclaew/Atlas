@@ -5,6 +5,7 @@ import { useStore } from '../../store/useStore';
 import { filterAndSort } from '../../lib/select';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
+import { useT } from '../../i18n';
 import { GameGrid } from './GameGrid';
 
 function EmptyState({
@@ -44,13 +45,14 @@ export function LibraryView() {
   const sort = useStore((s) => s.sort);
   const isLoading = useStore((s) => s.isLoading);
   const setNav = useStore((s) => s.setNav);
+  const t = useT();
 
   const filtered = useMemo(() => filterAndSort(games, nav, search, sort), [games, nav, search, sort]);
 
   if (isLoading && games.length === 0) {
     return (
       <div className="grid h-full place-items-center">
-        <Spinner size={26} label="Loading your library…" />
+        <Spinner size={26} />
       </div>
     );
   }
@@ -59,11 +61,11 @@ export function LibraryView() {
     return (
       <EmptyState
         icon={Plug}
-        title="Your library is empty"
-        body="Connect a platform and Atlas will pull in your games, playtime and achievements — all in one place."
+        title={t('lib.emptyTitle')}
+        body={t('lib.emptyBody')}
         action={
           <Button variant="primary" icon={Plug} onClick={() => setNav('accounts')}>
-            Connect a platform
+            {t('lib.connect')}
           </Button>
         }
       />
@@ -74,12 +76,8 @@ export function LibraryView() {
     return (
       <EmptyState
         icon={search ? SearchX : Library}
-        title={search ? 'No matches' : 'Nothing here yet'}
-        body={
-          search
-            ? `No games match “${search}”. Try a different search.`
-            : 'No games fall under this collection right now.'
-        }
+        title={search ? t('lib.noMatchTitle') : t('lib.nothingTitle')}
+        body={search ? t('lib.noMatchBody') : t('lib.nothingBody')}
       />
     );
   }

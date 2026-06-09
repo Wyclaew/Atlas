@@ -11,13 +11,23 @@ import type {
   NormalizedGame,
   Platform,
   PlatformKey,
+  WishlistItem,
 } from '../types';
 import { unixToISO } from './format';
+import { isTauri } from './env';
 
 const DB_URL = 'sqlite:atlas.db';
 let _db: Database | null = null;
 
+// Outside Tauri (browser design-QA) there's no SQLite — return a no-op stub so
+// reads resolve empty and writes are harmless. The store seeds mock data.
+const STUB_DB = {
+  execute: async () => ({ rowsAffected: 0, lastInsertId: 0 }),
+  select: async () => [],
+} as unknown as Database;
+
 export async function getDb(): Promise<Database> {
+  if (!isTauri()) return STUB_DB;
   if (!_db) _db = await Database.load(DB_URL);
   return _db;
 }
@@ -117,9 +127,20 @@ export async function disconnectPlatform(platformKey: PlatformKey): Promise<void
 
 export async function loadGames(): Promise<Game[]> {
   const db = await getDb();
-  return db.select<Game[]>(
-    `SELECT * FROM games WHERE is_hidden = 0 ORDER BY sort_title COLLATE NOCASE ASC`
-  );
+  // Load everything (incl. hidden); the UI filters hidden out except the Hidden view.
+  return db.select<Game[]>(`SELECT * FROM games ORDER BY sort_title COLLATE NOCASE ASC`);
+}
+
+/** Mark which Steam games are installed locally (from the appmanifest scan). */
+export async function markSteamInstalled(installed: { external_id: string; install_dir: string }[]): Promise<void> {
+  const db = await getDb();
+  await db.execute(`UPDATE games SET is_installed = 0 WHERE platform_key = 'steam'`);
+  for (const g of installed) {
+    await db.execute(
+      `UPDATE games SET is_installed = 1, install_path = $1 WHERE platform_key = 'steam' AND external_id = $2`,
+      [g.install_dir, g.external_id]
+    );
+  }
 }
 
 const GAME_COLS = [
@@ -251,5 +272,51 @@ export async function setSetting(key: string, value: string): Promise<void> {
     `INSERT INTO settings (key, value, updated_at) VALUES ($1, $2, datetime('now'))
      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
     [key, value]
+  );
+}
+
+// ---- Wishlist (un-owned games) ----
+
+export async function loadWishlist(): Promise<WishlistItem[]> {
+  const db = await getDb();
+  return db.select<WishlistItem[]>(`SELECT * FROM wishlist ORDER BY added_at DESC`);
+}
+
+export async function addToWishlist(item: {
+  platform_key: PlatformKey;
+  external_id: string;
+  title: string;
+  cover_url: string | null;
+  store_url: string | null;
+}): Promise<void> {
+  const db = await getDb();
+  await db.execute(
+    `INSERT INTO wishlist (platform_key, external_id, title, cover_url, store_url)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT(platform_key, external_id) DO NOTHING`,
+    [item.platform_key, item.external_id, item.title, item.cover_url, item.store_url]
+  );
+}
+
+export async function removeFromWishlist(platformKey: PlatformKey, externalId: string): Promise<void> {
+  const db = await getDb();
+  await db.execute(`DELETE FROM wishlist WHERE platform_key = $1 AND external_id = $2`, [platformKey, externalId]);
+}
+
+export async function updateWishlistPrice(
+  id: number,
+  p: { last: number | null; currency: string | null; discount: number | null; lowest: number | null; best: string | null }
+): Promise<void> {
+  const db = await getDb();
+  await db.execute(
+    `UPDATE wishlist SET
+       prev_price_cents = last_price_cents,
+       last_price_cents = $1,
+       currency = $2,
+       discount_pct = $3,
+       lowest_cents = $4,
+       best_store = $5
+     WHERE id = $6`,
+    [p.last, p.currency, p.discount, p.lowest, p.best, id]
   );
 }

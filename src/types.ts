@@ -1,11 +1,13 @@
 // Shared types. `*_*` integer flags mirror the SQLite cache (0/1).
 
 export type PlatformKey = 'steam' | 'epic' | 'gog' | 'xbox';
-export type GameStatus = 'Library' | 'Playing' | 'Completed' | 'Wishlist' | 'Dropped';
+export type GameStatus = 'Library' | 'Playing' | 'Completed' | 'Dropped';
 export type SortField = 'recent' | 'title' | 'playtime' | 'lastPlayed' | 'achievements';
 export type SortDir = 'asc' | 'desc';
 export type ViewMode = 'grid' | 'list';
-export type AppView = 'dashboard' | 'library' | 'accounts';
+export type AppView = 'dashboard' | 'library' | 'accounts' | 'store' | 'wishlist';
+
+export type Locale = 'en' | 'tr' | 'es' | 'de' | 'fr' | 'ru' | 'zh' | 'pt';
 
 export type NavId =
   | 'dashboard'
@@ -13,6 +15,8 @@ export type NavId =
   | 'favorites'
   | 'playing'
   | 'completed'
+  | 'hidden'
+  | 'store'
   | 'wishlist'
   | PlatformKey
   | 'accounts';
@@ -123,6 +127,78 @@ export interface PlatformPaths {
   steam_path: string | null;
   epic_path: string | null;
   gog_path: string | null;
+}
+
+export interface InstalledGame {
+  external_id: string;
+  install_dir: string;
+}
+
+export interface StoreListing {
+  external_id: string;
+  title: string;
+  cover_url: string | null;
+  header_url: string | null;
+  final_cents: number | null;
+  initial_cents: number | null;
+  discount_pct: number | null;
+  currency: string | null;
+  is_free: boolean;
+}
+
+export interface FeaturedStore {
+  specials: StoreListing[];
+  new_releases: StoreListing[];
+  top_sellers: StoreListing[];
+}
+
+export interface StoreApp {
+  external_id: string;
+  title: string;
+  description: string | null;
+  header_url: string | null;
+  cover_url: string | null;
+  screenshots: string[];
+  final_cents: number | null;
+  initial_cents: number | null;
+  discount_pct: number | null;
+  currency: string | null;
+  is_free: boolean;
+  release_date: string | null;
+  developers: string[];
+  genres: string[];
+}
+
+export interface PriceQuote {
+  shop: string;
+  price_cents: number;
+  regular_cents: number;
+  cut: number;
+  currency: string;
+  url: string;
+}
+
+export interface PriceComparison {
+  itad_id: string | null;
+  deals: PriceQuote[];
+  lowest_cents: number | null;
+  lowest_currency: string | null;
+}
+
+export interface WishlistItem {
+  id: number;
+  platform_key: PlatformKey;
+  external_id: string;
+  title: string;
+  cover_url: string | null;
+  store_url: string | null;
+  added_at: string;
+  last_price_cents: number | null;
+  prev_price_cents: number | null;
+  currency: string | null;
+  discount_pct: number | null;
+  lowest_cents: number | null;
+  best_store: string | null;
 }
 
 export interface Toast {

@@ -8,14 +8,54 @@ import type {
   AccountInfo,
   Game,
   GameStatus,
+  Locale,
   NavId,
   Platform,
+  PlatformKey,
   SortField,
   Toast,
   ViewMode,
+  WishlistItem,
 } from '../types';
 import * as db from '../lib/db';
 import { api, errorMessage } from '../lib/tauri';
+import { getSoundPrefs, playSfx, setSoundEnabled as sfxEnabled, setSoundVolume as sfxVolume } from '../lib/sfx';
+import { isTauri } from '../lib/env';
+import { dicts } from '../i18n/locales';
+
+const LOCALE_KEY = 'atlas.locale';
+const REGION_KEY = 'atlas.region';
+
+function readLocale(): Locale {
+  try {
+    const s = localStorage.getItem(LOCALE_KEY) as Locale | null;
+    if (s && s in dicts) return s;
+  } catch {
+    /* ignore */
+  }
+  const lang = (typeof navigator !== 'undefined' ? navigator.language : 'en').slice(0, 2).toLowerCase();
+  return (lang in dicts ? lang : 'en') as Locale;
+}
+
+function readRegion(): string {
+  try {
+    const s = localStorage.getItem(REGION_KEY);
+    if (s) return s;
+  } catch {
+    /* ignore */
+  }
+  const region = (typeof navigator !== 'undefined' ? navigator.language : 'en-US').split('-')[1];
+  return (region ?? 'us').toLowerCase();
+}
+
+const SIDEBAR_KEY = 'atlas.sidebar.collapsed';
+const readSidebar = (): boolean => {
+  try {
+    return localStorage.getItem(SIDEBAR_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
 
 interface StoreState {
   platforms: Platform[];
@@ -38,6 +78,31 @@ interface StoreState {
   achievementsLoading: boolean;
 
   toasts: Toast[];
+
+  // preferences
+  sidebarCollapsed: boolean;
+  soundEnabled: boolean;
+  soundVolume: number;
+  locale: Locale;
+  region: string;
+  itadKey: string;
+  toggleSidebar: () => void;
+  setSoundEnabled: (v: boolean) => void;
+  setSoundVolume: (v: number) => void;
+  setLocale: (l: Locale) => void;
+  setRegion: (cc: string) => void;
+  setItadKey: (k: string) => Promise<void>;
+
+  // installs + hidden
+  scanInstalls: () => Promise<void>;
+  unhideGame: (id: number) => Promise<void>;
+
+  // wishlist (un-owned games)
+  wishlist: WishlistItem[];
+  refreshWishlist: () => Promise<void>;
+  addWishlist: (item: { platform_key: PlatformKey; external_id: string; title: string; cover_url: string | null; store_url: string | null }) => Promise<void>;
+  removeWishlist: (platformKey: PlatformKey, externalId: string) => Promise<void>;
+  isWishlisted: (platformKey: PlatformKey, externalId: string) => boolean;
 
   // lifecycle
   init: () => Promise<void>;
@@ -95,15 +160,121 @@ export const useStore = create<StoreState>((set, get) => ({
   achievementsLoading: false,
   toasts: [],
 
+  sidebarCollapsed: readSidebar(),
+  soundEnabled: getSoundPrefs().enabled,
+  soundVolume: getSoundPrefs().volume,
+  locale: readLocale(),
+  region: readRegion(),
+  itadKey: '',
+  wishlist: [],
+
+  toggleSidebar: () => {
+    const next = !get().sidebarCollapsed;
+    try {
+      localStorage.setItem(SIDEBAR_KEY, next ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+    playSfx('toggle');
+    set({ sidebarCollapsed: next });
+  },
+
+  setSoundEnabled: (v) => {
+    sfxEnabled(v);
+    set({ soundEnabled: v });
+  },
+
+  setSoundVolume: (v) => {
+    sfxVolume(v);
+    set({ soundVolume: v });
+  },
+
+  setLocale: (l) => {
+    try {
+      localStorage.setItem(LOCALE_KEY, l);
+    } catch {
+      /* ignore */
+    }
+    set({ locale: l });
+  },
+
+  setRegion: (cc) => {
+    const region = cc.toLowerCase();
+    try {
+      localStorage.setItem(REGION_KEY, region);
+    } catch {
+      /* ignore */
+    }
+    set({ region });
+  },
+
+  setItadKey: async (k) => {
+    const key = k.trim();
+    await db.setSetting('itad_key', key);
+    set({ itadKey: key });
+  },
+
+  scanInstalls: async () => {
+    if (!isTauri()) return;
+    try {
+      const paths = await api.detectPlatformPaths();
+      const steamPath = paths.steam_path ?? (await db.getSetting('steam_path'));
+      if (!steamPath) return;
+      const installed = await api.scanSteamInstalls(steamPath);
+      await db.markSteamInstalled(installed);
+      await get().refreshGames();
+    } catch {
+      /* install scan is best-effort */
+    }
+  },
+
+  unhideGame: async (id) => {
+    await db.setUserField(id, 'is_hidden', 0);
+    set((s) => ({ games: s.games.map((g) => (g.id === id ? { ...g, is_hidden: 0 } : g)) }));
+  },
+
+  refreshWishlist: async () => set({ wishlist: await db.loadWishlist() }),
+
+  addWishlist: async (item) => {
+    if (get().isWishlisted(item.platform_key, item.external_id)) return;
+    await db.addToWishlist(item);
+    await get().refreshWishlist();
+    playSfx('success');
+    get().toast(`Added “${item.title}” to wishlist`, 'success');
+  },
+
+  removeWishlist: async (platformKey, externalId) => {
+    await db.removeFromWishlist(platformKey, externalId);
+    await get().refreshWishlist();
+  },
+
+  isWishlisted: (platformKey, externalId) =>
+    get().wishlist.some((w) => w.platform_key === platformKey && w.external_id === externalId),
+
   init: async () => {
+    // Dev-only: seed sample data when running in a plain browser (design QA).
+    if (import.meta.env.DEV && !isTauri()) {
+      const m = await import('../lib/devMock');
+      set({
+        platforms: m.mockPlatforms(),
+        accounts: m.mockAccounts(),
+        games: m.mockGames(),
+        wishlist: m.mockWishlist?.() ?? [],
+        isLoading: false,
+      });
+      return;
+    }
     set({ isLoading: true });
     try {
-      const [platforms, accounts, games] = await Promise.all([
+      const [platforms, accounts, games, wishlist, itadKey] = await Promise.all([
         db.loadPlatforms(),
         db.loadAccounts(),
         db.loadGames(),
+        db.loadWishlist(),
+        db.getSetting('itad_key'),
       ]);
-      set({ platforms, accounts, games, isLoading: false });
+      set({ platforms, accounts, games, wishlist, itadKey: itadKey ?? '', isLoading: false });
+      void get().scanInstalls();
     } catch (e) {
       set({ isLoading: false });
       get().toast(errorMessage(e), 'error');
@@ -135,6 +306,7 @@ export const useStore = create<StoreState>((set, get) => ({
       await db.markAccountSynced('steam');
       await get().refreshGames();
       await get().refreshAccounts();
+      await get().scanInstalls();
       get().toast(`Synced ${games.length} games from Steam.`, 'success');
     } catch (e) {
       get().toast(errorMessage(e), 'error');
@@ -154,7 +326,10 @@ export const useStore = create<StoreState>((set, get) => ({
     get().toast('Disconnected and removed cached games.', 'info');
   },
 
-  setNav: (nav) => set({ activeNav: nav, detailOpen: false }),
+  setNav: (nav) => {
+    if (get().activeNav !== nav) playSfx('nav');
+    set({ activeNav: nav, detailOpen: false });
+  },
   setSearch: (search) => set({ search }),
   setSort: (sort) => set({ sort }),
   setViewMode: (viewMode) => set({ viewMode }),
@@ -231,6 +406,7 @@ export const useStore = create<StoreState>((set, get) => ({
   launch: async (game) => {
     try {
       await api.launchGame(game.platform_key, game.external_id);
+      playSfx('launch');
       get().toast(`Launching ${game.title}…`, 'success');
     } catch (e) {
       get().toast(errorMessage(e), 'error');
@@ -240,6 +416,7 @@ export const useStore = create<StoreState>((set, get) => ({
   install: async (game) => {
     try {
       await api.installGame(game.platform_key, game.external_id);
+      get().toast(`Opening Steam to install ${game.title}…`, 'info');
     } catch (e) {
       get().toast(errorMessage(e), 'error');
     }
@@ -255,6 +432,8 @@ export const useStore = create<StoreState>((set, get) => ({
 
   toast: (message, type = 'info') => {
     const id = Math.random().toString(36).slice(2, 9);
+    if (type === 'success') playSfx('success');
+    else if (type === 'error') playSfx('error');
     set((s) => ({ toasts: [...s.toasts, { id, message, type }] }));
     setTimeout(() => get().dismissToast(id), 4200);
   },
